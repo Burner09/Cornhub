@@ -32,7 +32,7 @@ app.use('/order', orderRoutes)
 app.use('/cart', cartRoutes)
 
 // database connection
-mongoose.connect(process.env.NONGODB_URL)
+mongoose.connect(process.env.MONGODB_URL)
   .then(() => {
     console.log('connected to database');
     app.listen(process.env.PORT, () => {

@@ -1,24 +1,24 @@
 version: '3.8'
 services:
-  portfolio_api:
-    build: ./backend
-    container_name: portfolio_api_c
+  majorproject_server:
+    build: ./server
+    container_name: majorproject_server_c
     ports:
-      - '5555:5555'
+      - '3002:3002'
     volumes:
-      - ./backend:/app
+      - ./server:/app
       - /app/node_modules
     environment:
-      - PORT=5555
-      - MONGODB_URL=mongodb+srv://kurnlhector:Jagdtiger@cluster0.se2oxkf.mongodb.net/portfolio?retryWrites=true&w=majority
+      - PORT=3002
+      - MONGODB_URL=mongodb+srv://kurnlhector:Jagdtiger@cluster0.se2oxkf.mongodb.net
 
-  portfolio_frontend: 
-    build: ./frontend
-    container_name: portfolio_frontend_c
+  majorproject_client: 
+    build: ./client
+    container_name: portfolio_client_c
     ports:
       - '3000:3000'
     volumes:
-      - ./frontend:/app
+      - ./client:/app
       - /app/node_modules
     stdin_open: true
     tty: true

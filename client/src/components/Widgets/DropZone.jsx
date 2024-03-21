@@ -31,7 +31,7 @@ export default function DropZone({ className, onFileUploadComplete }) {
     if (files.length > 0) {
       onFileUploadComplete(files);
     }
-  }, [files]); 
+  }, [files, onFileUploadComplete]); 
   
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {
