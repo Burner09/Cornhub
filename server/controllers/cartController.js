@@ -5,10 +5,10 @@ import validator from "validator";
 import { v4 as uuidv4 } from 'uuid';
 import sharp from "sharp";
 import path from "path";
-import stripe from 'stripe';
+import Stripe from 'stripe';
 
 // stripe payments
-stripe(process.env.STRIPE_PRIVATE_KEY)
+const stripe = new Stripe(process.env.STRIPE_PRIVATE_KEY)
 
 // create folder func
 const createFolder = async (name) => {
@@ -97,29 +97,67 @@ export const checkout = async (req, res) => {
     if (!uuid || !validator.isUUID(uuid)) {
       return res.status(400).json({ message: "Invalid UUID" });
     }
-
-    const cart = await Cart.findOne({ uuid });
-    const items = Object.keys(cart.userCart).map(k => [k, cart.userCart[k]]);
-
-    items.forEach((item) => {
-      console.log(item)
-    })
-  
     
+    const cart = await Cart.findOne({ uuid });
 
-    const session = await stripe.checkout.session.create({
+    if (!cart || cart.userCart.length === 0) {
+      return res.status(404).json({ message: "Cart is empty" });
+    }
+
+    const items = cart.userCart.map(async (item) => {
+      const product = await Item.findById(item.productID);
+
+      return {
+        price_data: {
+          currency: "bbd",
+          product_data: {
+            name: product.name
+          },
+          unit_amount: product.price * 100
+        },
+        quantity: item.selectedDetails.qty
+      };
+    });
+
+    const lineItems = await Promise.all(items);
+
+    const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       mode: 'payment',
-      line_items: [],
-      success_url: 'http:localhost:3000', 
-      cancel_url: 'http:localhost:3000',
-    })
-    res.json({ url: session.url})
+      line_items: lineItems,
+      success_url: 'http://localhost:3000/success',
+      cancel_url: 'http://localhost:3000/cancel',
+    });
+
+    res.json({ url: session.url });
   } catch(err) {
-    console.log(err.message)
+    console.error("Error in checkout:", err.message);
     res.status(500).json({ message: "Internal server error" });
   }
-}
+};
+
+export const paymentConfirmations = async (req, res) => {
+  const sig = req.headers['stripe-signature'];
+  let event;
+
+  try {
+    event = stripe.webhooks.constructEvent(req.rawBody, sig, endpointSecret);
+  }
+  catch (err) {
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  switch (event.type) {
+    case 'payment_intent.succeeded': {
+      console.log(`PaymentIntent was successful for ${email}!`)
+      break;
+    }
+    default:
+      return res.status(400).end();
+  }
+
+  res.json({received: true});
+};
 
 export const addProductToCart = async (req, res) => {
   try {

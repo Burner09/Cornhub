@@ -33,6 +33,10 @@ const cartSchema = new mongoose.Schema({
     images: {
       type: Array,
       default: []
+    },
+    isPaid: {
+      type: Boolean,
+      default: false
     }
   }],
   total: {

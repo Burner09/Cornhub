@@ -35,6 +35,12 @@ export default function Cart() {
 
   const handleCheckout = () => {
     axios.get('http://localhost:3002/cart/checkout', { withCredentials: true })
+      .then((res) => {
+        window.location.href = `${res.data.url}`
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   const cartItemCount = cart ? Object.keys((cart.cart && cart.cart.userCart) || {}).length : 0;
