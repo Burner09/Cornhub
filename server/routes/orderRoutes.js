@@ -1,9 +1,10 @@
 import { Router } from "express";
-import { getOrder, createOrder, markOrderAsServe } from "../controllers/orderController.js";
+import { getOrder, createOrder, markOrderAsServe, getUserOrders } from "../controllers/orderController.js";
 
 const router = Router();
 
 router.get('/', getOrder);
+router.get('/userorders', getUserOrders)
 
 router.post('/', createOrder);
 

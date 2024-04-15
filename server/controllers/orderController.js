@@ -1,4 +1,5 @@
 import Order from "../models/orderSchema.js";
+import Cart from "../models/cartSchema.js";
 
 export const getOrder = async (req, res) => {
   try {
@@ -15,21 +16,60 @@ export const getOrder = async (req, res) => {
   }
 }
 
-export const createOrder = async (req, res) => {
-  const { clientName, items, price } = req.body
+export const getUserOrders = async (req, res) => {
   try {
-    const newOrder = {clientName, items, price  }
+    const uuid = req.cookies.uuid;
 
-    const response = await Order.create(newOrder);
+    const orders = await Order.find(uuid)
 
-    if(!response) {
-      res.status(500).json('order not created');
-    }
-
-    res.status(201).json({message: "Order created"})
+    res.status(200).json(orders)
   } catch(err) {
     console.log(err);
-    res.status(401).json(err);
+    res.status(500).json(err)
+  }
+}
+
+export const createOrder = async (req, res) => {
+  try {
+    const uuid = req.cookies.uuid;
+
+    const cart = await Cart.findOne({ uuid, 'userCart.isPaid': false });
+    if (!cart) {
+      return res.status(404).json({ message: 'Cart not found or all items are already paid' });
+    }
+
+    const unpaidItems = cart.userCart.filter(item => !item.isPaid);
+
+    if (unpaidItems.length === 0) {
+      return res.status(400).json({ message: 'All items are already paid' });
+    }
+
+    const total = unpaidItems.reduce((acc, item) => acc + item.selectedDetails.price, 0);
+
+    await Cart.updateMany(
+      { uuid, 'userCart.isPaid': false },
+      { $set: { 'userCart.$[elem].isPaid': true } },
+      { arrayFilters: [{ 'elem.isPaid': false }] }
+    );
+
+    const newOrder = { uuid, userDetails: cart.userDetails, items: unpaidItems };
+    const response = await Order.create(newOrder);
+
+    if (!response) {
+      return res.status(500).json({ message: 'Order not created' });
+    }
+
+    await Cart.updateOne({ uuid }, { $pull: { userCart: { isPaid: true } } });
+
+    const remainingItems = await Cart.findOne({ uuid, 'userCart.isPaid': false });
+    if (!remainingItems || remainingItems.userCart.length === 0) {
+      await Cart.updateOne({ uuid }, { $set: { total: 0, userCart: [] } });
+    }
+
+    res.status(201).json({ message: 'Order created' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Internal server error' });
   }
 }
 

@@ -113,7 +113,7 @@ export const checkout = async (req, res) => {
           product_data: {
             name: product.name
           },
-          unit_amount: product.price * 100
+          unit_amount: Math.round(product.price * 100)
         },
         quantity: item.selectedDetails.qty
       };
@@ -126,7 +126,7 @@ export const checkout = async (req, res) => {
       mode: 'payment',
       line_items: lineItems,
       success_url: 'http://localhost:3000/success',
-      cancel_url: 'http://localhost:3000/cancel',
+      cancel_url: 'http://localhost:3000/cart',
     });
 
     res.json({ url: session.url });
