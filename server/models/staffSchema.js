@@ -29,7 +29,7 @@ const staffSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
-userSchema.pre("save", async function (next) {
+staffSchema.pre("save", async function (next) {
   if (!/^(?=.*[A-Za-z])(?=.*\d).{6,}$/.test(this.password)) {
     throw Error("Password invalid");
   }
@@ -40,5 +40,5 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-const User = mongoose.model("User", userSchema);
-export default User;
+const Staff = mongoose.model("Staff", staffSchema);
+export default Staff;

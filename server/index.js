@@ -10,6 +10,7 @@ import 'dotenv/config';
 import itemRoutes from './routes/itemsRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import cartRoutes from './routes/cartRoutes.js';
+import staffRoutes from './routes/staffRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -27,6 +28,7 @@ app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
 app.use(helmet());
 
 // app routes
+app.use('/staff', staffRoutes)
 app.use('/items', itemRoutes)
 app.use('/order', orderRoutes)
 app.use('/cart', cartRoutes)

@@ -44,7 +44,7 @@ export default function Product() {
         <div className="col-span-3 col-start-2 grid grid-cols-5 py-12">
           <div className="col-span-3">
             {product.imagePaths && product.imagePaths.length > 0 ? (
-              <img src={`${url}/assets/${product.imagePaths[0]}`} alt={`${product.name}`} className="mx-auto bg-white" width={650} height={650}/>
+              <img src={`${url}/assets/${product.imagePaths[0]}`} alt={`${product.name}`} className="mx-auto bg-white" width={550} height={550}/>
             ) : (
               <p>No image available</p>
             )}

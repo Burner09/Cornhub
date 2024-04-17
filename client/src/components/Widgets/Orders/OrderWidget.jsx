@@ -5,7 +5,7 @@ export default function OrderWidget({order}) {
   console.log(order)
   return (
     <div>
-      <p className="text-xl text-green-400 col-span-1 inline">{order._id} <span className={`text-sm text-${order.isComplete? 'green': 'orange'}-500`}>• {order.isComplete? 'complete': 'pending'}</span></p>
+      <p className="text-xl font-medium col-span-1">{order._id} <span className={`text-sm ${order.isComplete? 'text-green-400' : 'text-tan'}`}>• {order.isComplete? 'complete': 'pending'}</span></p>
       <div>
         {order && order.items.map((item) => (
           <OrderItem key={item.productID} item={item} />
