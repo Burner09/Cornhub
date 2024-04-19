@@ -3,13 +3,24 @@ import Cart from "../models/cartSchema.js";
 
 export const getOrders = async (req, res) => {
   try {
-    const orders = await Order.find({});
+    const orders = await Order.find();
 
     if(!orders) {
       return res.status(404).json({message: "There are no orders"});
     }
 
     res.status(200).json(orders)
+  } catch(err) {
+    console.log(err);
+    res.status(500).json(err)
+  }
+}
+
+// edit this later
+export const getImportantOrders = async (req, res) => {
+  try {
+    const importantOrders = await Order.find().limit(5);
+    res.status(200).json(importantOrders)
   } catch(err) {
     console.log(err);
     res.status(500).json(err)
@@ -34,9 +45,9 @@ export const getOrder = async (req, res) => {
 
 export const getUserOrders = async (req, res) => {
   try {
-    const uuid = req.cookies.uuid;
+    const uuid = await req.cookies.uuid;
 
-    const orders = await Order.find(uuid)
+    const orders = await Order.find({uuid: uuid})
 
     res.status(200).json(orders)
   } catch(err) {

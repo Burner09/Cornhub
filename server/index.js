@@ -32,7 +32,6 @@ app.use('/staff', staffRoutes)
 app.use('/items', itemRoutes)
 app.use('/order', orderRoutes)
 app.use('/cart', cartRoutes)
-
 // database connection
 mongoose.connect(process.env.MONGODB_URL)
   .then(() => {

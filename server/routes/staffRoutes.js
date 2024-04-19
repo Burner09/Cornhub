@@ -1,8 +1,10 @@
 import { Router } from "express";
-import { createStaff, staffLogin, staffLogout } from "../controllers/staffController.js";
+import { verifyToken } from '../middleware/authMiddleware.js';
+import { createStaff, staffLogin, staffLogout, verifyStaff } from "../controllers/staffController.js";
 
 const router = Router();
 
+router.get('/', verifyToken, verifyStaff)
 router.get('/logout', staffLogout);
 
 router.post('/login', staffLogin);

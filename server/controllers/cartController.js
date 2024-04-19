@@ -163,7 +163,6 @@ export const addProductToCart = async (req, res) => {
   try {
     const { productID, price, selectedDetails } = req.body;
     const uuid = req.cookies.uuid;
-    console.log(uuid)
 
     if (!uuid || !validator.isUUID(uuid)) {
       return res.status(400).json({ message: "Invalid UUID" });

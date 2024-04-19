@@ -83,7 +83,7 @@ export const getNewItems = async (req, res) => {
   }
 }
 
-export const getTrendingItems = async (req, res) => {
+export const getFiveItems = async (req, res) => {
   try {
     const newItems = await Item.find().limit(5)
 

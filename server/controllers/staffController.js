@@ -41,6 +41,9 @@ export const staffLogout = (req, res) => {
   res.cookie("jwt", "", { httpOnly: true, maxAge: 1 });
   res.status(200).json({ message: "Logged out" });
 };
+export const verifyStaff = (req, res) => {
+  res.status(200).json({ message: 'verified' })
+};
 
 export const staffLogin = async (req, res) => {
   try {
