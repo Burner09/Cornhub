@@ -6,8 +6,11 @@ import DropZone from "../components/Widgets/DropZone";
 import axios from 'axios';
 import { useSnackbar } from 'notistack';
 import { useState} from 'react';
+import { useNavigate} from 'react-router-dom';
 
 export default function OrderForm({ product }) {
+  const navigate = useNavigate();
+  const { enqueueSnackbar } = useSnackbar();
   const [selectedOptions, setSelectedOptions] = useState(() => {
     const initialSelectedOptions = {};
     if (product && product.specificDetails) {
@@ -16,8 +19,7 @@ export default function OrderForm({ product }) {
       });
     }
     return { selectedDetails: initialSelectedOptions }
-  });
-  const { enqueueSnackbar } = useSnackbar();
+  })
 
   const handleSelectedChange = (detailName, selectedValue) => {
     setSelectedOptions(prevOptions => ({
@@ -41,6 +43,7 @@ export default function OrderForm({ product }) {
     selectedOptions.price = product.price
     axios.put('http://localhost:3002/cart', selectedOptions, { withCredentials: true })
       .then(() => {
+        navigate('/cart')
         enqueueSnackbar('Product Added To Cart', { variant: 'success' });
       })
       .catch((error) => {

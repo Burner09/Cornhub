@@ -15,7 +15,7 @@ export default function Home() {
         <img src='/images/HomeBanner.png' alt="Home Banner" className="shadow-lg"/><br />
         <p className="text-4xl font-bold text-center">Welcome to Everything Branded</p>
         <ProductsBanner url={url} type='new' />
-        <ProductsBanner url={url} type='trending' />
+        <ProductsBanner url={url} type='popular' />
       </div>
     </div>
   )

@@ -27,9 +27,10 @@ export default function Footer() {
       <div className="col-span-2 text-center">
         <p className="text-2xl font-medium">Useful Links</p>
         <div className="flex flex-col justify-center gap-2 py-10">
-          <Link to='/' className='text-xl font-medium hover:text-tan'>Contact</Link>
-          <Link to='/' className='text-xl font-medium hover:text-tan'>Products</Link>
+          <Link to='/contact' className='text-xl font-medium hover:text-tan'>Contact</Link>
+          <Link to='/products' className='text-xl font-medium hover:text-tan'>Products</Link>
           <Link to='/' className='text-xl font-medium hover:text-tan'>About US</Link>
+          <Link to='/staff' className='text-xl font-medium hover:text-tan'>Staff Portal</Link>
         </div>
       </div>
     </div>

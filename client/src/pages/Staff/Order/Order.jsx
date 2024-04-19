@@ -12,6 +12,7 @@ export default function Order() {
     axios.get('http://localhost:3002/order', { withCredentials: true })
       .then((res) => {
         setOrders(res.data);
+        console.log(orders)
       })
       .catch((err) => {
         if (err.response && err.response.status === 401) {

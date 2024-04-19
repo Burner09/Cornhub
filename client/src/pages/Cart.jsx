@@ -15,10 +15,9 @@ export default function Cart() {
       .then((res) => {
         setCart(res.data);
         setTotal(res.data.cart.total)
-        axios.get('http://localhost:3002/order/userorders')
+        axios.get('http://localhost:3002/order/userorders', { withCredentials: true })
           .then((res) => {
             setOrders(res.data);
-            console.log(res.data)
           })
         setIsLoading(false);
       })
