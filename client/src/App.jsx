@@ -13,6 +13,7 @@ import StaffDashboard from './pages/Staff/StaffDashboard';
 import ProductStaff from './pages/Staff/Product/ProductStaff'
 import CreateProduct from './pages/Staff/Product/CreateProduct';
 import Products from './pages/Products';
+import UpdateProduct from './pages/Staff/Product/UpdateProduct';
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
         <Route path='/staff' element={<StaffDashboard />} />
         <Route path='/staff/products' element={<ProductStaff />} />
         <Route path='/staff/createproduct' element={<CreateProduct />} />
+        <Route path='/staff/updateproduct/:id' element={<UpdateProduct />} />
         <Route path='/staff/orders' element={<Order />} />
         
         {/* Auth routes */}

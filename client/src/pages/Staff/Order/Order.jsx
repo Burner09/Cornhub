@@ -12,7 +12,6 @@ export default function Order() {
     axios.get('http://localhost:3002/order', { withCredentials: true })
       .then((res) => {
         setOrders(res.data);
-        console.log(orders)
       })
       .catch((err) => {
         if (err.response && err.response.status === 401) {
@@ -23,6 +22,6 @@ export default function Order() {
   }, [navigate, enqueueSnackbar]);
 
   return (
-    <div>Order</div>
+    <div>a{console.log(orders)}</div>
   );
 }

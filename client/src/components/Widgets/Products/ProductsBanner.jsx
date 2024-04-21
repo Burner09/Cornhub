@@ -1,6 +1,6 @@
 import axios from "axios"
 import { useState, useEffect } from "react"
-import ProductWidget from "./Widgets/Products/ProductWidget"
+import ProductWidget from "./ProductWidget"
 
 export default function ProductsBanner({url, type}) {
   const [isLoading, setIsLoading] = useState(false)

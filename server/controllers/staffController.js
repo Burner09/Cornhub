@@ -69,6 +69,16 @@ export const staffLogin = async (req, res) => {
     console.log(err.message);
   }
 };
+export const getAllStaff = async (req, res) => {
+  try {
+    const staff = await Staff.find({}, { _id: 1, firstname: 1, lastname: 1, email: 1 });
+    res.status(200).json(staff)
+  } catch(err) {
+    const errors = handleErrors(err);
+    res.status(400).json(errors);
+    console.log(err);
+  }
+}
 
 export const createStaff = async (req, res) => {
   try {

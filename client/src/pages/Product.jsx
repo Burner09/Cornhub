@@ -8,26 +8,12 @@ export default function Product() {
   const [isLoading, setIsLoading] = useState(false)
   const { id } = useParams()
   const url = 'http://localhost:3002'
-  const qty = [1, 2, 5, 10, 20, 50]
-  const colors = ["Red", "Blue", "Green", "Yellow", "Purple", "Orange"];
-  const sizes = ["sm", "md", "lg", "xl"]
 
   useEffect(() => {
     setIsLoading(true)
     axios.get(`${url}/items/product/${id}`)
       .then((res) => {
-        const productWithDetails = {
-          ...res.data,
-          specificDetails: {
-            qty: qty,
-            colors: colors,
-            sizes: sizes,
-            random: sizes,
-            else: sizes,
-
-          }
-        };
-        setProduct(productWithDetails);
+        setProduct(res.data);
         setIsLoading(false)
       })
       .catch((err) => {
@@ -41,10 +27,10 @@ export default function Product() {
       {isLoading ? (
         <p className="text-4xl font-medium">Loading</p>
       ) : (
-        <div className="col-span-3 col-start-2 grid grid-cols-5 py-12">
+        <div className="col-span-3 col-start-2 grid grid-cols-5 pt-12">
           <div className="col-span-3">
             {product.imagePaths && product.imagePaths.length > 0 ? (
-              <img src={`${url}/assets/${product.imagePaths[0]}`} alt={`${product.name}`} className="mx-auto bg-white" width={550} height={550}/>
+              <img src={`${url}/assets/${product.imagePaths[0]}`} alt={`${product.name}`} className="mx-auto rounded-sm bg-white" width={550} height={550}/>
             ) : (
               <p>No image available</p>
             )}

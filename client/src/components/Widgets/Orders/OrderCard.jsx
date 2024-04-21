@@ -7,13 +7,12 @@ import OrderProducts from './OrderProducts';
 
 
 export default function OrderCard({order}) {
-  
   return (
     <div className='w-96 p-4 border rounded-lg'>
       <p className="text-green-500 text-lg mb-2">{order._id}</p>
       <div className='h-28 overflow-auto'>
         {order.items.map((item) => (
-          <OrderProducts key={item.productID} item={item} />
+          <OrderProducts key={item._id} item={item} />
         ))}
       </div>
       <div className="flex justify-between mt-4">

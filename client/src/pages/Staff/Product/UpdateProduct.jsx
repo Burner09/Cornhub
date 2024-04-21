@@ -1,13 +1,14 @@
-import { useState } from 'react';
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from "react-router-dom";
 import TextField from '@mui/material/TextField';
 import CloseIcon from '@mui/icons-material/Close';
 import { useDropzone } from "react-dropzone";
 import { useSnackbar } from 'notistack';
-import axios from 'axios'
+import axios from 'axios';
 
-export default function CreateProduct() {
+export default function UpdateProduct() {
   const navigate = useNavigate();
+  const { id } = useParams();
   const [name, setName] = useState('');
   const [price, setPrice] = useState(0);
   const [description, setDescription] = useState('');
@@ -17,7 +18,26 @@ export default function CreateProduct() {
   const [tempValue, setTempValue] = useState('');
   const { enqueueSnackbar } = useSnackbar();
 
-  const handleCreateProduct = (e) => {
+  useEffect(() => {
+    axios.get(`http://localhost:3002/items/product/${id}`)
+      .then((res) => {
+        const fetchedProduct = res.data;
+        setName(fetchedProduct.name || '');
+        setPrice(fetchedProduct.price || 0);
+        setDescription(fetchedProduct.description || '');
+        setSpecificDetails(fetchedProduct.specificDetails || []);
+        if (fetchedProduct.imagePaths) {
+          const filesArray = fetchedProduct.imagePaths.map(imagePath => ({ preview: `http://localhost:3002/assets/${imagePath}` }));
+          setFiles(filesArray);
+          setSelectedImage(filesArray[0]);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [id]);
+
+  const handleUpdateProduct = (e) => {
     e.preventDefault();
     const formData = new FormData();
     formData.append('name', name);
@@ -27,21 +47,21 @@ export default function CreateProduct() {
     files.forEach(file => {
       formData.append('images', file);
     });
-  
-    axios.post('http://localhost:3002/items', formData, {
+
+    axios.put(`http://localhost:3002/items/${id}`, formData, {
       withCredentials: true,
       headers: {
         'Content-Type': 'multipart/form-data'
       }
     })
-    .then(() => {
-      enqueueSnackbar("Product Create", { variant: "success"})
-      navigate('/staff')
-    })
-    .catch((err) => {
-      console.log(err)
-    });
-  }
+      .then(() => {
+        enqueueSnackbar("Product Updated", { variant: "success" });
+        navigate('/staff');
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   const removeFile = name => {
     setFiles(files => files.filter(file => file.name !== name));
@@ -123,10 +143,10 @@ export default function CreateProduct() {
   });
 
   return (
-    <form className="grid grid-cols-5 p-8" onSubmit={handleCreateProduct}>
+    <form className="grid grid-cols-5 p-8" onSubmit={handleUpdateProduct}>
       <div className="col-span-1 flex flex-col pt-12 justify-start items-end">
         {files.slice(0, 5).map(file => (
-          <div key={file.lastModified} className='rounded-lg border border-dark bg-white h-24 w-24 mb-2 relative flex justify-center items-center'>
+          <div key={file.preview} className='rounded-lg border border-dark bg-white h-24 w-24 mb-2 relative flex justify-center items-center'>
             <img src={file.preview} alt='' className="object-cover max-w-full max-h-full cursor-pointer" onClick={() => handleImageClick(file)} />
             <button type="button" className='flex justify-center items-center border rounded-full bg-tan absolute top-0 right-0 -mt-2 -mr-1 hover:text-tan hover:bg-dark' onClick={() => removeFile(file.name)}>
               <CloseIcon />
@@ -162,6 +182,7 @@ export default function CreateProduct() {
           <TextField
             label="Product Name"
             variant="standard"
+            value={name}
             onChange={(e) => setName(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
@@ -173,6 +194,7 @@ export default function CreateProduct() {
             label="Product Price"
             type="text"
             variant="standard"
+            value={price}
             onChange={(e) => {
               const inputValue = e.target.value;
               if (/^\d*\.?\d*$/.test(inputValue) || inputValue === "") {
@@ -190,6 +212,7 @@ export default function CreateProduct() {
             variant="standard"
             multiline
             maxRows={4}
+            value={description}
             onChange={(e) => setDescription(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
@@ -205,6 +228,7 @@ export default function CreateProduct() {
                   <TextField
                     label="Detail Name"
                     variant="standard"
+                    value={detail.name}
                     onChange={(e) => handleChangeDetail(detailIndex, 'name', e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
@@ -239,7 +263,7 @@ export default function CreateProduct() {
             ))}
             <button type="button" className='bg-tan mt-2 px-4 py-1 rounded-full' onClick={handleAddDetail}>Add Detail</button>
           </div>
-          <button type='submit' className='rounded-full px-8 py-2 text-2xl font-medium bg-tan'>Create Product</button>
+          <button type='submit' className='rounded-full px-8 py-2 text-2xl font-medium bg-tan'>Update Product</button>
         </div>
       </div>
     </form>

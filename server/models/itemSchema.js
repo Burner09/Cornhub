@@ -13,6 +13,10 @@ const itemSchema = new mongoose.Schema({
   imagePaths: {
     type: Array,
     default: []
+  },
+  specificDetails: {
+    type: Array,
+    required: true
   }
 })
 

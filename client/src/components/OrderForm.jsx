@@ -2,11 +2,12 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import TextField from '@mui/material/TextField'; // Import TextField for the qty input
 import DropZone from "../components/Widgets/DropZone";
 import axios from 'axios';
 import { useSnackbar } from 'notistack';
-import { useState} from 'react';
-import { useNavigate} from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 export default function OrderForm({ product }) {
   const navigate = useNavigate();
@@ -18,8 +19,8 @@ export default function OrderForm({ product }) {
         initialSelectedOptions[detailName] = options.length > 0 ? options[0] : '';
       });
     }
-    return { selectedDetails: initialSelectedOptions }
-  })
+    return { selectedDetails: initialSelectedOptions };
+  });
 
   const handleSelectedChange = (detailName, selectedValue) => {
     setSelectedOptions(prevOptions => ({
@@ -30,7 +31,7 @@ export default function OrderForm({ product }) {
       }
     }));
   };
-  
+
   const handleFileUploadComplete = (uploadedFiles) => {
     setSelectedOptions(prevOptions => ({
       ...prevOptions,
@@ -40,10 +41,10 @@ export default function OrderForm({ product }) {
 
   const handleAddToCart = () => {
     selectedOptions.productID = product._id;
-    selectedOptions.price = product.price
+    selectedOptions.price = product.price;
     axios.put('http://localhost:3002/cart', selectedOptions, { withCredentials: true })
       .then(() => {
-        navigate('/cart')
+        navigate('/cart');
         enqueueSnackbar('Product Added To Cart', { variant: 'success' });
       })
       .catch((error) => {
@@ -54,23 +55,30 @@ export default function OrderForm({ product }) {
 
   return (
     <div className='grid grid-cols-2 gap-4'>
-      {product.specificDetails &&
-        Object.entries(product.specificDetails).map(([detailName, options]) => (
-          <FormControl key={detailName} className={`col-span-${detailName === 'qty' ? 2 : 1}`} size="small">
-            <InputLabel id={`select-label-${detailName}`}>{detailName}</InputLabel>
-            <Select
-              labelId={`select-label-${detailName}`}
-              id={`select-${detailName}`}
-              value={(selectedOptions.selectedDetails && selectedOptions.selectedDetails[detailName]) || ''}
-              label={detailName}
-              onChange={(e) => handleSelectedChange(detailName, e.target.value)}
-            >
-              {options.map((option, index) => (
-                <MenuItem key={index} value={option}>{option}</MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        ))}
+      {product.specificDetails && product.specificDetails.map((detail) => (
+        <FormControl key={detail.name} className={`col-span-${detail.value === 'qty' ? 2 : 1}`} size="small">
+          <InputLabel id={`select-label-${detail.name}`}>{detail.name}</InputLabel>
+          <Select
+            labelId={`select-label-${detail.name}`}
+            id={`select-${detail.name}`}
+            value={(selectedOptions.selectedDetails && selectedOptions.selectedDetails[detail.name]) || (detail.values.length > 0 ? detail.values[0] : '')}
+            label={detail.name}
+            onChange={(e) => handleSelectedChange(detail.name, e.target.value)}
+          >
+            {detail.values.map((option, index) => (
+              <MenuItem key={index} value={option}>{option}</MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+      ))}
+      <FormControl key="qty" className="col-span-2" size="small">
+        <TextField 
+          label="Qty" 
+          variant="standard"
+          value={selectedOptions.selectedDetails.qty || ''}
+          onChange={(e) => handleSelectedChange('qty', e.target.value)}/>
+      </FormControl>
+
       <DropZone
         className='p-5 mt-5 border border-dashed border-dark'
         onFileUploadComplete={handleFileUploadComplete}
@@ -82,4 +90,3 @@ export default function OrderForm({ product }) {
     </div>
   );
 }
-

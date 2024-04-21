@@ -1,4 +1,4 @@
-import ProductsBanner from "../components/ProductsBanner";
+import ProductsBanner from "../components/Widgets/Products//ProductsBanner";
 import axios from "axios";
 import { useEffect } from "react";
 

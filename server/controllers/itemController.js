@@ -12,6 +12,16 @@ const createFolder = async (name) => {
   return { folderName, folderPath };
 };
 
+// delete file func
+const deleteFile = async (folderPath, imagePath) => {
+  const filePath = path.join(folderPath, imagePath);
+  try {
+    await fs.unlink(filePath);
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 // delete folder func
 const deleteFolder = async (folderPath) => {
   if (await fs.access(folderPath).then(() => true).catch(() => false)) {
@@ -96,10 +106,11 @@ export const getFiveItems = async (req, res) => {
 }
 
 export const createItems = async (req, res) => {
+  let folder;
   try {
-    const { name, description, price } = req.body;
-    let folder;
-    const newItem = { name, description, price };
+    const { name, description, price, specificDetails } = req.body;
+    const parsedSpecificDetails = JSON.parse(specificDetails);
+    const newItem = { name, description, price, specificDetails: parsedSpecificDetails, };
 
     if(req.files) {
       folder = await createFolder(name);
@@ -123,21 +134,53 @@ export const createItems = async (req, res) => {
 }
 
 export const updateItems = async (req, res) => {
+  let folder;
   try {
     const { id } = req.params;
     const { name, description, price, sizes } = req.body;
-    let folder;
-    let oldImageFolder;
+    let updatedItem = { name, description, price, sizes };
 
-    const updatedItem = { name, description, price, sizes };
-
-    if(req.files) {
+    if (req.files && req.files.length > 0) {
       folder = await createFolder(name);
-      const newImagePaths = await Promise.all(req.files.map(async (file, index) => await compressImages(folder, file, index, title)));
+      const newImagePaths = await Promise.all(req.files.map(async (file, index) => await compressImages(folder, file, index, name)));
 
-      const existingProduct = await Item.findById(id);
+      let existingProduct = await Item.findById(id);
+
+      if (existingProduct.imagePaths && existingProduct.imagePaths.length > 0) {
+        await Promise.all(existingProduct.imagePaths.map(async (imagePath) => await deleteFile(folder.folderPath, imagePath)));
+      }
+
+      updatedItem.imagePaths = newImagePaths;
     }
-  } catch(err) {
 
+    await Item.findByIdAndUpdate(id, updatedItem);
+    res.status(200).json({ message: "Item updated successfully" });
+  } catch (err) {
+    if (req.files && folder) {
+      await deleteFolder(folder.folderPath);
+    }
+    console.log(err);
+    res.status(500).json(err.message);
+  }
+}
+
+export const deleteItem = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deletedItem = await Item.findByIdAndDelete(id);
+
+    if (!deletedItem) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    const imageFolderPath = "public/assets/" + path.dirname(deletedItem.imagePaths[0]);
+
+    await deleteFolder(imageFolderPath);
+
+    res.status(200).json({ message: "Item deleted successfully" });
+  } catch(err) {
+    console.log(err.message);
+    res.status(500).json(err.message);
   }
 }

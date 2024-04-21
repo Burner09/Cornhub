@@ -1,7 +1,14 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import ProductCard from './ProductCard';
 
 export default function StaffProductBanner({items}) {
+  const [products, setProducts] = useState(items);
+
+  const handleDeleteProduct = (productId) => {
+    setProducts(products.filter((product) => product._id !== productId));
+  };
+
   return (
     <div className="bg-white mt-8 p-8 rounded-lg">
       <div className="flex justify-between">
@@ -15,9 +22,9 @@ export default function StaffProductBanner({items}) {
           </div>
           <p className="text-xl font-medium text-center">Add Product</p>
         </Link>
-        {items.map((item) => (
+        {products.map((item) => (
           <div key={item._id}>
-            <ProductCard item={item} />
+            <ProductCard item={item} onDelete={handleDeleteProduct} />
           </div>
         ))}
       </div>

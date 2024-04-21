@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import sharp from "sharp";
 import path from "path";
 import Stripe from 'stripe';
+import { log } from "console";
 
 // stripe payments
 const stripe = new Stripe(process.env.STRIPE_PRIVATE_KEY)
@@ -198,8 +199,7 @@ export const addProductToCart = async (req, res) => {
       product.images = compressedImages;
     }
 
-    existingCart.userCart.push(product);
-
+    await existingCart.userCart.push(product);
     existingCart.total += totalPrice;
 
     await existingCart.save();
