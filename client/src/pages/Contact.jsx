@@ -6,7 +6,7 @@ import TextField from '@mui/material/TextField';
 
 export default function Contact() {
   return (
-    <div className=" w-[60%] my-24 mx-auto p-20 md:px-6 bg-slate-100 text-dark rounded-lg">
+    <div className=" w-[60%] my-24 mx-auto p-20 md:px-6 bg-white text-dark rounded-lg">
       <div className="mb-12 grid gap-x-6 md:grid-cols-2 lg:grid-cols-4">
         <div className="mx-auto mb-12 text-center lg:mb-0">
           <PublicIcon  />

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useSnackbar } from 'notistack';
 
-export default function ConfirmDeleteMoadal({ name, link, onClose, onDelete }) {
+export default function ConfirmDeleteModal({ name, link, onClose, onDelete }) {
   const { enqueueSnackbar } = useSnackbar();
 
   const handleDelete = () => {

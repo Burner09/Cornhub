@@ -14,6 +14,9 @@ import ProductStaff from './pages/Staff/Product/ProductStaff'
 import CreateProduct from './pages/Staff/Product/CreateProduct';
 import Products from './pages/Products';
 import UpdateProduct from './pages/Staff/Product/UpdateProduct';
+import CreateStaff from './pages/Staff/CreateStaff';
+import UpdateStaff from './pages/Staff/UpdateStaff';
+import AllStaff from './pages/Staff/AllStaff';
 
 function App() {
   return (
@@ -29,6 +32,9 @@ function App() {
 
         {/* Staff routes */}
         <Route path='/staff' element={<StaffDashboard />} />
+        <Route path='/staff/allstaff' element={<AllStaff />} />
+        <Route path='/staff/createstaff' element={<CreateStaff />} />
+        <Route path='/staff/updatestaff/:id' element={<UpdateStaff />} />
         <Route path='/staff/products' element={<ProductStaff />} />
         <Route path='/staff/createproduct' element={<CreateProduct />} />
         <Route path='/staff/updateproduct/:id' element={<UpdateProduct />} />

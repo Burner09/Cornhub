@@ -7,7 +7,7 @@ export default function ProductWidget({item, url}) {
         <img src={`${url}/assets/${item.imagePaths[0]}`} alt={item.name}/>
         <p className="px-3 border-t">
           <span className="capitalize">{item.name}</span><br />
-          <span className="text-red-500">${item.price}</span>
+          <span className="text-red-500">${item.price.toFixed(2)}</span>
         </p>
       </div>
     </Link>

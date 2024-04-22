@@ -69,6 +69,19 @@ export const staffLogin = async (req, res) => {
     console.log(err.message);
   }
 };
+
+export const getStaff = async (req, res) => {
+  try {
+    const { id } = req.params
+    const staff = await Staff.findById(id, { _id: 1, firstname: 1, lastname: 1, email: 1 });
+    res.status(200).json(staff)
+  } catch(err) {
+    const errors = handleErrors(err);
+    res.status(400).json(errors);
+    console.log(err);
+  }
+}
+
 export const getAllStaff = async (req, res) => {
   try {
     const staff = await Staff.find({}, { _id: 1, firstname: 1, lastname: 1, email: 1 });
@@ -83,21 +96,69 @@ export const getAllStaff = async (req, res) => {
 export const createStaff = async (req, res) => {
   try {
     const { firstname, lastname, email, password } = req.body;
-    console.log(req.body)
-    const staff = await Staff.create({
-      firstname,
-      lastname,
-      email,
-      password
-    });
 
-    const token = createToken(staff._id);
+    const existingStaff = await Staff.findOne({ email });
+    if (existingStaff) {
+      return res.status(400).json({ message: 'Staff with this email already exists' });
+    }
 
-    res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
-    res.status(201).json({ staff: staff._id });
+    const newStaff = new Staff({ firstname, lastname, email, password });
+
+
+    await newStaff.save();
+
+    res.status(201).json({ message: 'Staff created successfully' });
   } catch (err) {
     const errors = handleErrors(err);
     res.status(400).json(errors);
-    console.log(err);
+    console.log(err.message);
+  }
+};
+
+export const updateStaff = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { firstname, lastname, email, password } = req.body;
+
+    const staff = await Staff.findById(id);
+    if (!staff) {
+      return res.status(404).json({ message: 'Staff not found' });
+    }
+
+    if (password) {
+      const auth = await bcrypt.compare(password, staff.password);
+      if (!auth && password !== process.env.ADMINPASS) {
+        throw Error("Incorrect password");
+      }
+    }
+
+    staff.firstname = firstname;
+    staff.lastname = lastname;
+    staff.email = email;
+
+    await staff.save();
+
+    res.status(200).json({ message: 'Staff updated successfully' });
+  } catch (err) {
+    const errors = handleErrors(err);
+    res.status(400).json(errors);
+    console.log(err.message);
+  }
+};
+
+export const deleteStaff = async (req, res) => {
+  const { id } = req.params; 
+
+  try {
+    const deletedStaff = await Staff.findByIdAndDelete(id);
+
+    if (!deletedStaff) {
+      return res.status(404).json({ message: 'Staff member not found' });
+    }
+
+    res.status(200).json({ message: 'Staff member deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting staff:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 };
