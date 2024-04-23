@@ -2,19 +2,21 @@ import { useState, useEffect } from "react"
 import axios from "axios"
 import CartItem from "../components/Widgets/CartItem"
 import OrderWidget from "../components/Widgets/Orders/OrderWidget";
+import UserDetailFormModal from "../components/Modals/UserDetailFormModal";
 
 export default function Cart() {
   const [isLoading, setIsLoading] = useState(false);
-  const [total, setTotal] = useState(0)
-  const [cart, setCart] = useState(null)
-  const [orders, setOrders] = useState(null)
+  const [total, setTotal] = useState(0);
+  const [cart, setCart] = useState(null);
+  const [orders, setOrders] = useState(null);
+  const [showModal, setShowModal] = useState(false);
   
   useEffect(() => {
     setIsLoading(true);
     axios.get('http://localhost:3002/cart', { withCredentials: true })
       .then((res) => {
         setCart(res.data);
-        setTotal(res.data.cart.total)
+        setTotal(res.data.total)
         axios.get('http://localhost:3002/order/userorders', { withCredentials: true })
           .then((res) => {
             setOrders(res.data);
@@ -27,19 +29,28 @@ export default function Cart() {
       });
   }, []);
 
-  const handleItemRemove = (removedItemId, price, qty ) => {
+  const handleItemRemove = (removedItemId, price, qty) => {
+    const updatedUserCart = cart.userCart.filter(item => item._id !== removedItemId);
+
+    const newTotal = total - price * qty;
+
     setCart(prevCart => ({
       ...prevCart,
-      cart: {
-        ...prevCart.cart,
-        userCart: prevCart.cart.userCart.filter(item => item._id !== removedItemId)
-      }
+      userCart: updatedUserCart
     }));
-
-    setTotal(total - price * qty)
+    setTotal(newTotal);
   };
 
+  const handleUpdatedCart = (ucart) => {
+    setCart(ucart);
+  }
+
   const handleCheckout = () => {
+    if(!cart.userDetails) {
+      setShowModal(!showModal);
+      return;
+    }
+
     axios.get('http://localhost:3002/cart/checkout', { withCredentials: true })
       .then((res) => {
         window.location.href = `${res.data.url}`
@@ -49,7 +60,7 @@ export default function Cart() {
       });
   }
 
-  const cartItemCount = cart ? Object.keys((cart.cart && cart.cart.userCart) || {}).length : 0;
+  const cartItemCount = cart ? Object.keys((cart && cart.userCart) || {}).length : 0;
   const orderCount = orders ? orders.length : 0
 
   return (
@@ -62,7 +73,7 @@ export default function Cart() {
               <p className="col-start-5 col-span-1 text-center text-xl font-medium">Price</p>
             </div>
             <hr />
-            {cart && cart.cart && cart.cart.userCart && cart.cart.userCart.map(item => (
+            {cart && cart.userCart && cart.userCart.map(item => (
               <div key={item._id}>
                 <CartItem item={item} onItemRemove={handleItemRemove} />
                 <hr />
@@ -93,6 +104,7 @@ export default function Cart() {
           </div>}
         </div>
       }
+      {showModal && <UserDetailFormModal onClose={() => setShowModal(!showModal)} setCart={handleUpdatedCart} />}
     </div>
    
   )

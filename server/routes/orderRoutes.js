@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { verifyToken } from '../middleware/authMiddleware.js';
-import { getOrders, createOrder, markOrderAsServe, getUserOrders, getOrder, getImportantOrders } from "../controllers/orderController.js";
+import { getOrders, createOrder, markOrderComplete, getUserOrders, getOrder, getImportantOrders, setOrderPriority } from "../controllers/orderController.js";
 
 const router = Router();
 
@@ -12,6 +12,7 @@ router.get('/:id', verifyToken, getOrder);
 
 router.post('/', createOrder);
 
-router.put('/:id', verifyToken, markOrderAsServe);
+router.put('/complete/:id', verifyToken, markOrderComplete);
+router.put('/priority/:id', verifyToken, setOrderPriority);
 
 export default router;

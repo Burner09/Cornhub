@@ -40,7 +40,7 @@ export default function CartItem({ item, onItemRemove }) {
             <p className="text-lg font-medium">qty({item.selectedDetails.qty})</p>
           </div>
           <div className="col-span-1 flex flex-col justify-between text-center pb-4">
-            <p className="text-xl font-medium">${product.price} <br />{item.selectedDetails.qty > 1 && <span className="text-sm">(${(item.selectedDetails.qty*product.price).toFixed(2)})</span>}</p>
+            <p className="text-xl font-medium">${product.price.toFixed(2)} <br />{item.selectedDetails.qty > 1 && <span className="text-sm">(${(item.selectedDetails.qty*product.price).toFixed(2)})</span>}</p>
             <button className="text-red-500" onClick={handleRemoveItem}>Remove Item</button>
           </div>
         </div>

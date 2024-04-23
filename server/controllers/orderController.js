@@ -16,16 +16,26 @@ export const getOrders = async (req, res) => {
   }
 }
 
-// edit this later
 export const getImportantOrders = async (req, res) => {
   try {
-    const importantOrders = await Order.find().limit(5);
-    res.status(200).json(importantOrders)
+    let importantOrders = [];
+    
+    const priorityOrders = await Order.find({ isPriority: true, isComplete: false });
+
+    if (priorityOrders.length < 10) {
+      const normalOrdersLimit = 10 - priorityOrders.length;
+      const normalOrders = await Order.find({ isPriority: false, isComplete: false }).limit(normalOrdersLimit);
+      importantOrders = [...priorityOrders, ...normalOrders];
+    } else {
+      importantOrders = priorityOrders.slice(0, 10);
+    }
+
+    res.status(200).json(importantOrders);
   } catch(err) {
-    console.log(err);
-    res.status(500).json(err)
+    console.error(err);
+    res.status(500).json(err);
   }
-}
+};
 
 export const getOrder = async (req, res) => {
   try {
@@ -59,6 +69,7 @@ export const getUserOrders = async (req, res) => {
 export const createOrder = async (req, res) => {
   try {
     const uuid = req.cookies.uuid;
+    console.log(uuid)
 
     const cart = await Cart.findOne({ uuid, 'userCart.isPaid': false });
     if (!cart) {
@@ -70,8 +81,6 @@ export const createOrder = async (req, res) => {
     if (unpaidItems.length === 0) {
       return res.status(400).json({ message: 'All items are already paid' });
     }
-
-    const total = unpaidItems.reduce((acc, item) => acc + item.selectedDetails.price, 0);
 
     await Cart.updateMany(
       { uuid, 'userCart.isPaid': false },
@@ -100,18 +109,42 @@ export const createOrder = async (req, res) => {
   }
 }
 
-export const markOrderAsServe = async (req, res) => {
-  const { id } = req.params
+export const markOrderComplete = async (req, res) => {
+  const { id } = req.params;
   try {
-    response = await Order.findByIdAndUpdate(id);
-
-    if(!response) {
-      res.status(401).json({message: "Order not marked serve"});
+    const order = await Order.findById(id);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
     }
 
-    res.status(203).json({message: "Order marked as serve"});
-  } catch(err) {
-    console.log(err.message);
-    res.status(500).json(err.message)
+    order.isComplete = !order.isComplete;
+    if(order.isPriority === true) {
+      order.isPriority = !order.isPriority
+    }
+
+    await order.save();
+
+    res.status(200).json({ message: "Order marked as complete" });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ message: "Server error" });
   }
-}
+};
+
+export const setOrderPriority = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const order = await Order.findById(id);
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    order.isPriority = !order.isPriority;
+    await order.save();
+
+    res.status(200).json({ message: "Order set as priority" });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ message: "Server error" });
+  }
+};

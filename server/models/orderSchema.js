@@ -7,11 +7,12 @@ const orderSchema = new mongoose.Schema({
     required: true,
   },
   userDetails: {
-    type: Map,
+    type: Object,
     of: {
-      firstName: String,
-      lastName: String,
+      firstname: String,
+      lastname: String,
       address: String,
+      phonenumber: String,
       email: {
         type: String,
         lowercase: true,
@@ -34,6 +35,10 @@ const orderSchema = new mongoose.Schema({
       default: []
     },
   }],
+  isPriority: {
+    type: Boolean,
+    default: false
+  },
   isComplete: {
     type: Boolean,
     default: false

@@ -29,16 +29,5 @@ const staffSchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
-staffSchema.pre("save", async function (next) {
-  if (!/^(?=.*[A-Za-z])(?=.*\d).{6,}$/.test(this.password)) {
-    throw Error("Password invalid");
-  }
-
-  const salt = await bcrypt.genSalt();
-  this.password = bcrypt.hash(this.password, salt);
-
-  next();
-});
-
 const Staff = mongoose.model("Staff", staffSchema);
 export default Staff;

@@ -97,13 +97,19 @@ export const createStaff = async (req, res) => {
   try {
     const { firstname, lastname, email, password } = req.body;
 
+    if (!/^(?=.*[A-Za-z])(?=.*\d).{6,}$/.test(password)) {
+      throw Error("Password invalid");
+    }
+
     const existingStaff = await Staff.findOne({ email });
     if (existingStaff) {
       return res.status(400).json({ message: 'Staff with this email already exists' });
     }
 
-    const newStaff = new Staff({ firstname, lastname, email, password });
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(password, salt);
 
+    const newStaff = new Staff({ firstname, lastname, email, password: hashedPassword });
 
     await newStaff.save();
 

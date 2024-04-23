@@ -3,7 +3,7 @@ import { useSnackbar } from 'notistack';
 
 export default function ConfirmDeleteModal({ name, link, onClose, onDelete }) {
   const { enqueueSnackbar } = useSnackbar();
-
+  // I did this wrong but oh well
   const handleDelete = () => {
     axios.delete(link, { withCredentials: true })
       .then(() => {

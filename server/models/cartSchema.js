@@ -8,11 +8,12 @@ const cartSchema = new mongoose.Schema({
     unique: true,
   },
   userDetails: {
-    type: Map,
+    type: Object,
     of: {
-      firstName: String,
-      lastName: String,
+      firstname: String,
+      lastname: String,
       address: String,
+      phonenumber: String,
       email: {
         type: String,
         lowercase: true,

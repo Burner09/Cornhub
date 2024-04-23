@@ -56,7 +56,7 @@ export const getCart = async (req, res) => {
       return res.status(404).json({ message: "Cart not found" });
     }
 
-    res.status(200).json({ cart: existingCart });
+    res.status(200).json(existingCart);
   } catch (error) {
     console.error("Error retrieving cart:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -256,10 +256,36 @@ export const removeProductFromCart = async (req, res) => {
 
     await existingCart.save();
 
-    res.status(200).json({ message: "Product removed from cart successfully", cart: existingCart });
+    res.status(200).json({ message: "Product removed from cart successfully" });
   } catch (error) {
     console.error("Error removing product from cart:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
 
+export const addUserDetails = async (req, res) => {
+  try {
+    const { firstname, lastname, address, phonenumber, email } = req.body;
+    const uuid = req.cookies.uuid;
+    const userDetails = { firstname, lastname, address, phonenumber, email };
+
+    if (!uuid || !validator.isUUID(uuid)) {
+      return res.status(400).json({ message: "Invalid UUID" });
+    }
+
+    const existingCart = await Cart.findOne({ uuid });
+
+    if (!existingCart) {
+      return res.status(404).json({ message: "Cart not found" });
+    }
+
+    existingCart.userDetails = userDetails;
+
+    await existingCart.save();
+    
+    res.status(200).json(existingCart);
+  } catch(error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
