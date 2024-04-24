@@ -16,6 +16,6 @@ export default function Success() {
   }, [navigate]);
 
   return (
-    <div>Success</div>
+    <div></div>
   );
 }

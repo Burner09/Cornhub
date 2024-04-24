@@ -31,7 +31,7 @@ const handleErrors = (err) => {
 };
 
 // jwt token creation;
-const maxAge = 30 * 24 * 60 * 60;
+const maxAge = 8 * 60 * 60;
 const createToken = (id) => {
   return jwt.sign({ id }, process.env.SECRETMESSAGE, { expiresIn: maxAge });
 };
@@ -41,6 +41,7 @@ export const staffLogout = (req, res) => {
   res.cookie("jwt", "", { httpOnly: true, maxAge: 1 });
   res.status(200).json({ message: "Logged out" });
 };
+
 export const verifyStaff = (req, res) => {
   res.status(200).json({ message: 'verified' })
 };

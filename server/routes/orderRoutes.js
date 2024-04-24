@@ -4,8 +4,8 @@ import { getOrders, createOrder, markOrderComplete, getUserOrders, getOrder, get
 
 const router = Router();
 
-router.get('/userorders', getUserOrders);
 router.get('/', verifyToken, getOrders);
+router.get('/userorders', getUserOrders);
 router.get('/importantorders', verifyToken, getImportantOrders);
 
 router.get('/:id', verifyToken, getOrder);

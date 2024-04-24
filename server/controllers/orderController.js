@@ -69,7 +69,6 @@ export const getUserOrders = async (req, res) => {
 export const createOrder = async (req, res) => {
   try {
     const uuid = req.cookies.uuid;
-    console.log(uuid)
 
     const cart = await Cart.findOne({ uuid, 'userCart.isPaid': false });
     if (!cart) {
@@ -124,7 +123,7 @@ export const markOrderComplete = async (req, res) => {
 
     await order.save();
 
-    res.status(200).json({ message: "Order marked as complete" });
+    res.status(200).json(order);
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ message: "Server error" });
@@ -142,7 +141,7 @@ export const setOrderPriority = async (req, res) => {
     order.isPriority = !order.isPriority;
     await order.save();
 
-    res.status(200).json({ message: "Order set as priority" });
+    res.status(200).json(order);
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ message: "Server error" });

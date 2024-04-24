@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { useSnackbar } from 'notistack';
 import { TextField, IconButton, InputAdornment, Button } from '@mui/material';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import {Visibility, VisibilityOff} from '@mui/icons-material';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 

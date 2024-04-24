@@ -11,8 +11,8 @@ router.get('/checkout', checkout)
 
 router.post('/paymentconfirm', paymentConfirmations);
 
-router.put('/userdetails', addUserDetails);
 router.put('/', upload.array('images', 3), addProductToCart)
+router.put('/userdetails', addUserDetails);
 
 router.delete('/:id', removeProductFromCart)
 export default router;

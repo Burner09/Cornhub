@@ -114,7 +114,6 @@ export const createItems = async (req, res) => {
 
     if(req.files) {
       folder = await createFolder(name);
-
       const imagePaths = await Promise.all(req.files.map(async (file, index) => await compressImages(folder, file, index, name)));
 
       newItem.imagePaths = imagePaths;

@@ -56,7 +56,7 @@ export default function UpdateProduct() {
     })
       .then(() => {
         enqueueSnackbar("Product Updated", { variant: "success" });
-        navigate('/staff');
+        navigate(`/product/${id}`);
       })
       .catch((err) => {
         console.log(err);
@@ -239,11 +239,13 @@ export default function UpdateProduct() {
                   <TextField
                     label="Add Value"
                     variant="standard"
+                    value={tempValue}
                     onChange={(e) => setTempValue(e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         e.preventDefault()
                         handleAddValue(detailIndex);
+                        setTempValue("");
                       }
                     }}
                   />

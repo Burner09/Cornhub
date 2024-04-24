@@ -20,6 +20,16 @@ const createFolder = async (name) => {
   return { folderName, folderPath };
 };
 
+const deleteFolder = async (folderPath) => {
+  if (await fs.access(folderPath).then(() => true).catch(() => false)) {
+    try {
+      await fs.rm(folderPath, { recursive: true });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+};
+
 // image compression
 const compressImages = async (folder, file, index, title) => {
   const image = path.join(`${title.substring(0, 10).replace(/ /g, "-")}-${index + 1}.png`);
@@ -161,10 +171,12 @@ export const paymentConfirmations = async (req, res) => {
 };
 
 export const addProductToCart = async (req, res) => {
+  let folder
   try {
-    const { productID, price, selectedDetails } = req.body;
-    const uuid = req.cookies.uuid;
+    const { productID, price, selectedDetailString } = req.body;
+    const selectedDetails = JSON.parse(selectedDetailString)
 
+    const uuid = req.cookies.uuid;
     if (!uuid || !validator.isUUID(uuid)) {
       return res.status(400).json({ message: "Invalid UUID" });
     }
@@ -190,7 +202,7 @@ export const addProductToCart = async (req, res) => {
     if(req.files) {
       product.images = req.files;
       
-      const folder = await createFolder(uuid);
+      folder = await createFolder(uuid);
 
       const compressedImages = await Promise.all(product.images.map(async (file, index) => {
         const imagePath = await compressImages(folder, file, index, productID);
@@ -205,9 +217,13 @@ export const addProductToCart = async (req, res) => {
     await existingCart.save();
 
     res.status(200).json({ message: "Product added to cart successfully", cart: existingCart });
-  } catch (error) {
-    console.error("Error adding product to cart:", error);
-    res.status(500).json({ message: "Internal server error" });
+  } catch (err) {
+    if(req.files && folder) {
+      await deleteFolder(folder.folderPath);
+    }
+
+    console.log(err);
+    res.status(500).json(err.message);
   }
 };
 
@@ -243,13 +259,8 @@ export const removeProductFromCart = async (req, res) => {
     existingCart.userCart = existingCart.userCart.filter(item => item._id.toString() !== id);
 
     if (cartItem.images && cartItem.images.length > 0) {
-      await Promise.all(cartItem.images.map(async imagePath => {
-        try {
-          await fs.unlink(path.join("public/assets/", imagePath));
-        } catch (error) {
-          console.error("Error deleting image:", error);
-        }
-      }));
+      const imageFolderPath = "public/assets/" + path.dirname(cartItem.images[0]);
+      await deleteFolder(imageFolderPath);
     }
 
     existingCart.total -= removedProductPrice * cartItem.selectedDetails.qty;

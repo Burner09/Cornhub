@@ -27,7 +27,7 @@ export default function CreateProduct() {
     files.forEach(file => {
       formData.append('images', file);
     });
-  
+    
     axios.post('http://localhost:3002/items', formData, {
       withCredentials: true,
       headers: {
@@ -215,11 +215,13 @@ export default function CreateProduct() {
                   <TextField
                     label="Add Value"
                     variant="standard"
+                    value={tempValue}
                     onChange={(e) => setTempValue(e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         e.preventDefault()
                         handleAddValue(detailIndex);
+                        setTempValue("");
                       }
                     }}
                   />

@@ -43,12 +43,21 @@ export default function StaffDashboard() {
     });
   }, [navigate, enqueueSnackbar])
 
+  const handleOrder = (order) => {
+    if(order) {
+      axios.get('http://localhost:3002/order/importantorders', { withCredentials: true })
+      .then((res) => {
+        setOrders(res.data)
+      }).catch((err) => console.log(err))
+    }
+  }
+
   return (
     <div className="p-20">
       <p className="text-4xl font-bold">Staff Dashboard</p>
       {!isLoading && items.length > 0 && 
         <div>
-          <StaffOrderBanner orders={orders} />
+          <StaffOrderBanner orders={orders} handleOrder={handleOrder} />
           <StaffProductBanner items={items} />
           <StaffBanner staff={staff} />
         </div>

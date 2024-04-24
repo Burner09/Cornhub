@@ -1,13 +1,14 @@
 import axios from 'axios';
 import { useSnackbar } from 'notistack';
 
-export default function OrderConfirmModal({ order, action, message, onClose }) {
+export default function OrderConfirmModal({ order, action, message, onClose, handleOrder }) {
   const { enqueueSnackbar } = useSnackbar();
   const handleFunction = () => {
     if(action === "markComplete") {
       axios.put(`http://localhost:3002/order/complete/${order._id}`, {}, { withCredentials: true })
-        .then(() => {
+        .then((res) => {
           enqueueSnackbar('Order marked as complete', { variant: 'success' });
+          handleOrder(res.data);
           onClose();
         }).catch((err) => {
           console.log(err)
@@ -18,8 +19,9 @@ export default function OrderConfirmModal({ order, action, message, onClose }) {
 
     if(action === "setPriority") {
       axios.put(`http://localhost:3002/order/priority/${order._id}`, {}, { withCredentials: true })
-        .then(() => {
+        .then((res) => {
           enqueueSnackbar('Order set as priority', { variant: 'success' });
+          handleOrder(res.data)
           onClose();
         }).catch((err) => {
           console.log(err)

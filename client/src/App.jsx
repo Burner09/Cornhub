@@ -17,6 +17,8 @@ import UpdateProduct from './pages/Staff/Product/UpdateProduct';
 import CreateStaff from './pages/Staff/CreateStaff';
 import UpdateStaff from './pages/Staff/UpdateStaff';
 import AllStaff from './pages/Staff/AllStaff';
+import AllOrders from './pages/Staff/Order/AllOrders';
+import NotFound from './pages/NotFound';
 
 function App() {
   return (
@@ -38,11 +40,15 @@ function App() {
         <Route path='/staff/products' element={<ProductStaff />} />
         <Route path='/staff/createproduct' element={<CreateProduct />} />
         <Route path='/staff/updateproduct/:id' element={<UpdateProduct />} />
-        <Route path='/staff/orders' element={<Order />} />
+        <Route path='/staff/orders' element={<AllOrders />} />
+        <Route path='/staff/order/:id' element={<Order />} />
         
         {/* Auth routes */}
         <Route path='/signin' element={<Signin />} />
         <Route path='/signout' element={<Signout />} />
+
+        {/* 404 Route */}
+        <Route path='*' element={<NotFound />} />
       </Routes>
       <Footer />
     </div>

@@ -73,12 +73,14 @@ export default function Cart() {
               <p className="col-start-5 col-span-1 text-center text-xl font-medium">Price</p>
             </div>
             <hr />
-            {cart && cart.userCart && cart.userCart.map(item => (
-              <div key={item._id}>
-                <CartItem item={item} onItemRemove={handleItemRemove} />
-                <hr />
-              </div>
-            ))}
+            <div className="max-h-[60vh] overflow-auto">
+              {cart && cart.userCart && cart.userCart.map(item => (
+                <div key={item._id}>
+                  <CartItem item={item} onItemRemove={handleItemRemove} />
+                  <hr />
+                </div>
+              ))}
+            </div>
           </div>
           
           <div className="bg-white h-40 p-4 text-center">
@@ -95,12 +97,14 @@ export default function Cart() {
               <p className="col-start-5 col-span-1 text-center text-xl font-medium">Price</p>
             </div>
             <hr />
-            {orders && orders.map(order => (
-              <div key={order._id}>
-                <OrderWidget order={order} />
-                <hr />
-              </div>
-            ))}
+            <div className="max-h-[60vh] overflow-auto">
+              {orders && orders.map(order => (
+                <div key={order._id}>
+                  <OrderWidget order={order} />
+                  <hr />
+                </div>
+              ))}
+            </div>
           </div>}
         </div>
       }
