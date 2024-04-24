@@ -24,7 +24,7 @@ export default function StaffDashboard() {
       .then((res) => {
         setItems(res.data)
       })
-      axios.get('http://localhost:3002/order/importantorders', { withCredentials: true })
+      axios.get('http://localhost:3002/order/staffdashboardorders', { withCredentials: true })
       .then((res) => {
         setOrders(res.data)
       })
@@ -45,7 +45,7 @@ export default function StaffDashboard() {
 
   const handleOrder = (order) => {
     if(order) {
-      axios.get('http://localhost:3002/order/importantorders', { withCredentials: true })
+      axios.get('http://localhost:3002/order/staffdashboardorders', { withCredentials: true })
       .then((res) => {
         setOrders(res.data)
       }).catch((err) => console.log(err))

@@ -1,12 +1,15 @@
 import { Router } from "express";
 import { verifyToken } from '../middleware/authMiddleware.js';
-import { getOrders, createOrder, markOrderComplete, getUserOrders, getOrder, getImportantOrders, setOrderPriority } from "../controllers/orderController.js";
+import { getOrders, createOrder, markOrderComplete, getUserOrders, getOrder, getStaffDashboardOrders, setOrderPriority, getNewOrders, getPriorityOrders, getCompletedOrders } from "../controllers/orderController.js";
 
 const router = Router();
 
 router.get('/', verifyToken, getOrders);
+router.get('/new', verifyToken, getNewOrders);
+router.get('/priority', verifyToken, getPriorityOrders);
+router.get('/completed', verifyToken, getCompletedOrders);
 router.get('/userorders', getUserOrders);
-router.get('/importantorders', verifyToken, getImportantOrders);
+router.get('/staffdashboardorders', verifyToken, getStaffDashboardOrders);
 
 router.get('/:id', verifyToken, getOrder);
 

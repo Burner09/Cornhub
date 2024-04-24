@@ -16,7 +16,7 @@ export const getOrders = async (req, res) => {
   }
 }
 
-export const getImportantOrders = async (req, res) => {
+export const getStaffDashboardOrders = async (req, res) => {
   try {
     let importantOrders = [];
     
@@ -31,6 +31,39 @@ export const getImportantOrders = async (req, res) => {
     }
 
     res.status(200).json(importantOrders);
+  } catch(err) {
+    console.error(err);
+    res.status(500).json(err);
+  }
+};
+
+export const getPriorityOrders = async (req, res) => {
+  try {
+    const priorityOrders = await Order.find({ isPriority: true, isComplete: false });
+
+    res.status(200).json(priorityOrders);
+  } catch(err) {
+    console.error(err);
+    res.status(500).json(err);
+  }
+};
+
+export const getNewOrders = async (req, res) => {
+  try {
+    const newOrders = await Order.find({ isPriority: false, isComplete: false });
+
+    res.status(200).json(newOrders);
+  } catch(err) {
+    console.error(err);
+    res.status(500).json(err);
+  }
+};
+
+export const getCompletedOrders = async (req, res) => {
+  try {
+    const completedOrders = await Order.find({ isComplete: true });
+
+    res.status(200).json(completedOrders);
   } catch(err) {
     console.error(err);
     res.status(500).json(err);
