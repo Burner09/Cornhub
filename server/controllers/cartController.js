@@ -6,7 +6,6 @@ import { v4 as uuidv4 } from 'uuid';
 import sharp from "sharp";
 import path from "path";
 import Stripe from 'stripe';
-import { log } from "console";
 
 // stripe payments
 const stripe = new Stripe(process.env.STRIPE_PRIVATE_KEY)
@@ -114,6 +113,8 @@ export const checkout = async (req, res) => {
     if (!cart || cart.userCart.length === 0) {
       return res.status(404).json({ message: "Cart is empty" });
     }
+
+    const customerInfo = cart.userDetails;
 
     const items = cart.userCart.map(async (item) => {
       const product = await Item.findById(item.productID);

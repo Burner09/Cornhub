@@ -7,9 +7,14 @@ const handleErrors = (err) => {
   const errors = {};
 
   // incorrect login credentials
-  if ( err.message === "Incorrect email" || err.message === "Incorrect password") {
+  if (err.message === "Incorrect email" || err.message === "Incorrect password") {
     errors.login = "Incorrect email or password";
-    return errors;
+  } else if (err.message === "Account is locked") {
+    errors.login = "Account is locked. Please contact administrator.";
+  } else if(err.message === "Unauthorized") {
+    errors.login = "Unauthorized to unlock accounts";
+  } else {
+    errors.login = "Unknown";
   }
 
   // duplicate error code
@@ -31,17 +36,12 @@ const handleErrors = (err) => {
 };
 
 // jwt token creation;
-const maxAge = 8 * 60 * 60;
+const maxAge = 2 * 60 * 60;
 const createToken = (id) => {
   return jwt.sign({ id }, process.env.SECRETMESSAGE, { expiresIn: maxAge });
 };
 
 // Staff authentication
-export const staffLogout = (req, res) => {
-  res.cookie("jwt", "", { httpOnly: true, maxAge: 1 });
-  res.status(200).json({ message: "Logged out" });
-};
-
 export const verifyStaff = (req, res) => {
   res.status(200).json({ message: 'verified' })
 };
@@ -49,20 +49,36 @@ export const verifyStaff = (req, res) => {
 export const staffLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const staff = await Staff.findOne({ email }, { _id: 1, password: 1 });
+    let staff = await Staff.findOne({ email });
 
-    if (staff) {
-      const auth = await bcrypt.compare(password, staff.password);
-      if (!auth) {
-        throw Error("Incorrect password");
-      }
-    } else {
+    if (!staff) {
       throw Error("Incorrect email");
     }
 
-    const token = createToken(staff._id);
+    if (staff.isLocked) {
+      throw Error("Account is locked");
+    }
 
-    res.cookie("jwt", token, { httpOnly: true, maxAge: maxAge * 1000 });
+    const auth = await bcrypt.compare(password, staff.password);
+    if (!auth) {
+      staff.failedLoginAttempts += 1;
+
+      if (staff.failedLoginAttempts >= 3) {
+        staff.isLocked = true;
+        await staff.save();
+        throw Error("Account is locked");
+      }
+
+      await staff.save();
+
+      throw Error("Incorrect password");
+    }
+
+    staff.failedLoginAttempts = 0;
+    await staff.save();
+
+    const token = createToken(staff._id);
+    res.cookie("jwt", token, {  maxAge: maxAge * 1000 });
     res.status(200).json({ staff: staff._id });
   } catch (err) {
     const errors = handleErrors(err);
@@ -71,10 +87,21 @@ export const staffLogin = async (req, res) => {
   }
 };
 
+export const staffLogout = (req, res) => {
+  try {
+    res.clearCookie("jwt");
+    res.status(200).json({ message: "Logged out" });
+  } catch(err) {
+    const errors = handleErrors(err);
+    res.status(500).json(errors);
+    console.log(err.message);
+  }
+};
+
 export const getStaff = async (req, res) => {
   try {
     const { id } = req.params
-    const staff = await Staff.findById(id, { _id: 1, firstname: 1, lastname: 1, email: 1 });
+    const staff = await Staff.findById(id, { _id: 1, firstname: 1, lastname: 1, email: 1, isLocked: 1 });
     res.status(200).json(staff)
   } catch(err) {
     const errors = handleErrors(err);
@@ -85,7 +112,7 @@ export const getStaff = async (req, res) => {
 
 export const getAllStaff = async (req, res) => {
   try {
-    const staff = await Staff.find({}, { _id: 1, firstname: 1, lastname: 1, email: 1 });
+    const staff = await Staff.find({}, { _id: 1, firstname: 1, lastname: 1, email: 1, isLocked: 1 });
     res.status(200).json(staff)
   } catch(err) {
     const errors = handleErrors(err);
@@ -118,6 +145,75 @@ export const createStaff = async (req, res) => {
   } catch (err) {
     const errors = handleErrors(err);
     res.status(400).json(errors);
+    console.log(err.message);
+  }
+};
+
+export const unlockAccount = async (req, res) => {
+  try {
+    const { email, password, targetEmail } = req.body;
+
+    const employee = await Staff.findOne({ email });
+
+    if (!employee || employee.isLocked) {
+      throw Error("Unauthorized");
+    }
+
+    const targetStaff = await Staff.findOne({ email: targetEmail });
+
+    if (!targetStaff || !targetStaff.isLocked) {
+      throw Error("Account is not locked");
+    }
+
+    const auth = await bcrypt.compare(password, employee.password);
+    if (!auth) {
+      throw Error("Incorrect password");
+    }
+
+    targetStaff.isLocked = false;
+    targetStaff.failedLoginAttempts = 0;
+    await targetStaff.save();
+
+    res.status(200).json({ message: "Account unlocked successfully" });
+  } catch (err) {
+    const errors = handleErrors(err);
+    res.status(400).json(errors);
+    console.log(err.message);
+  }
+};
+
+export const changePassword = async (req, res) => {
+  try {
+    const { email, oldPassword, newPassword } = req.body;
+
+    const staff = await Staff.findOne({ email });
+
+    if (!staff) {
+      throw Error("Staff not found");
+    }
+
+    const auth = await bcrypt.compare(oldPassword, staff.password);
+    if (!auth && oldPassword !== process.env.ADMINPASS) {
+      throw Error("Current password is incorrect");
+    }
+
+    if (oldPassword === newPassword) {
+      throw Error("New password must be different from the old password");
+    }
+
+    if (!/^(?=.*[A-Za-z])(?=.*\d).{6,}$/.test(newPassword)) {
+      throw Error("New password invalid");
+    }
+
+    const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    staff.password = hashedPassword;
+    await staff.save();
+
+    res.status(200).json({ message: "Password changed successfully" });
+  } catch (err) {
+    res.status(400).json(err.message);
     console.log(err.message);
   }
 };

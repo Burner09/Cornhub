@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useSnackbar } from 'notistack';
 import { TextField, IconButton, InputAdornment, Button } from '@mui/material';
 import {Visibility, VisibilityOff} from '@mui/icons-material';
@@ -13,6 +13,7 @@ export default function CreateStaff() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [error, setError] = useState(null);
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
 
@@ -32,8 +33,22 @@ export default function CreateStaff() {
     e.preventDefault();
 
     if (!passwordMatch) {
-      enqueueSnackbar('Passwords do not match', { variant: 'error' });
+      setError("Passwords do not match");
       return;
+    }
+
+    const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d).{6,}$/;
+
+    if (!email || !email.match(/^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/)) {
+      enqueueSnackbar('Please enter a valid email address.', { variant: 'error' });
+      setError("Invalid email address")
+      return;
+    }
+
+    if (!passwordPattern.test(password)) {
+      enqueueSnackbar('Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number, 1 special character, and be at least 8 characters long.', { variant: 'error' });
+      setError("Password does not meet requirements")
+      return
     }
 
     axios.post('http://localhost:3002/staff/createstaff', { firstname, lastname, email, password }, { withCredentials: true})
@@ -42,7 +57,7 @@ export default function CreateStaff() {
       navigate('/staff');
     })
     .catch((error) => {
-      enqueueSnackbar('Fail to create', { variant: 'error' });
+      enqueueSnackbar('Failed to create staff', { variant: 'error' });
       console.error('Error:', error);
     });
   };
@@ -74,6 +89,8 @@ export default function CreateStaff() {
           label="Email"
           variant="standard"
           className="w-[400px] mb-4"
+          type="email"
+          pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
@@ -82,7 +99,7 @@ export default function CreateStaff() {
           label="Password"
           variant="standard"
           type={showPassword ? 'text' : 'password'}
-          className="w-[400px] mb-4"
+          className='w-[400px] mb-4'
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           InputProps={{
@@ -104,7 +121,7 @@ export default function CreateStaff() {
           label="Confirm Password"
           variant="standard"
           type={showConfirmPassword ? 'text' : 'password'}
-          className={`w-[400px] mb-4 ${!passwordMatch && 'border-red-500'}`}
+          className='w-[400px] mb-4'
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           InputProps={{
@@ -121,7 +138,13 @@ export default function CreateStaff() {
             )
           }}
         />
-        {!passwordMatch && <p className="text-red-500">Passwords do not match</p>}
+        <ul className="text-sm text-gray-500">
+          <li>Password must contain at least 1 uppercase letter</li>
+          <li>Password must contain at least 1 lowercase letter</li>
+          <li>Password must contain at least 1 number</li>
+          <li>Password must be at least 6 characters long</li>
+        </ul>
+        {error && <p className="text-red-500">{error}</p>}
         <Button variant="contained" type="submit">Submit</Button>
       </div>
     </form>

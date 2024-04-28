@@ -150,8 +150,10 @@ export const markOrderComplete = async (req, res) => {
     }
 
     order.isComplete = !order.isComplete;
-    if(order.isPriority === true) {
-      order.isPriority = !order.isPriority
+    if(order.isPriority === true && order.isComplete === true) {
+      order.isPriority = false
+    } else {
+      order.isPriority = true
     }
 
     await order.save();

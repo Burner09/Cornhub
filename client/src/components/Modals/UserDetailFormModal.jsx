@@ -66,7 +66,7 @@ export default function UserDetailFormModal({ onClose, setCart }) {
             </div>
             <TextField
               id="address"
-              label="Adress"
+              label="Address"
               variant="standard"
               className="w-[400px] mb-4"
               value={address}

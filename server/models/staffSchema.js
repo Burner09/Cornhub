@@ -27,6 +27,14 @@ const staffSchema = new mongoose.Schema({
     required: [true, "A password is required"],
     min: 6,
   },
+  isLocked: {
+    type: Boolean,
+    default: false,
+  },
+  failedLoginAttempts: {
+    type: Number,
+    default: 0,
+  },
 }, { timestamps: true });
 
 const Staff = mongoose.model("Staff", staffSchema);

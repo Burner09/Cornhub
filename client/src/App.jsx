@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import Home from './pages/Home';
 import Cart from './pages/Cart';
 import Order from './pages/Staff/Order/Order';
@@ -21,11 +22,33 @@ import AllOrders from './pages/Staff/Order/AllOrders';
 import NotFound from './pages/NotFound';
 
 function App() {
+  const [isStaff, setIsStaff] = useState(false);
+
+  const getCookie = (name) => {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      
+      if (cookie.startsWith(`${name}=`)) {
+        return cookie.substring(name.length + 1);
+      }
+    }
+    return null;
+  };
+
+  useEffect(() => {
+    const jwtCookie = getCookie('jwt');
+  
+    if (jwtCookie) {
+      setIsStaff(true);
+    }
+  }, []);
+
   return (
     <div className="App bg-light text-dark">
-      <Navbar />
+      <Navbar isStaff={isStaff} />
       <Routes>
-        <Route path='/' element={<Home />} />
+        <Route path='/' element={<Home isStaff={(e) => {setIsStaff(e)}} />} />
         <Route path='/products' element={<Products />} />
         <Route path='/contact' element={<Contact />} />
         <Route path='/cart' element={<Cart />} />
@@ -33,7 +56,7 @@ function App() {
         <Route path='/success' element={<Success />} />
 
         {/* Staff routes */}
-        <Route path='/staff' element={<StaffDashboard />} />
+        <Route path='/staff' element={<StaffDashboard isStaff={(e) => {setIsStaff(e)}} />} />
         <Route path='/staff/allstaff' element={<AllStaff />} />
         <Route path='/staff/createstaff' element={<CreateStaff />} />
         <Route path='/staff/updatestaff/:id' element={<UpdateStaff />} />
@@ -44,8 +67,8 @@ function App() {
         <Route path='/staff/order/:id' element={<Order />} />
         
         {/* Auth routes */}
-        <Route path='/signin' element={<Signin />} />
-        <Route path='/signout' element={<Signout />} />
+        <Route path='/signin' element={<Signin isStaff={() => setIsStaff(true)}/>} />
+        <Route path='/signout' element={<Signout isStaff={() => setIsStaff(false)} />} />
 
         {/* 404 Route */}
         <Route path='*' element={<NotFound />} />

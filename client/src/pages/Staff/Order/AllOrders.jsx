@@ -60,11 +60,16 @@ export default function AllOrders() {
     }
   }
 
-  const filteredNewOrders = newOrders.filter(order => {
-    order.userDetails.firstname.toLowerCase().includes(searchQuery.toLowerCase())}
-  );
+  const filterOrdersByCustomerName = (orders) => {
+    return orders.filter(order => {
+      const fullName = `${order.userDetails.firstname} ${order.userDetails.lastname}`;
+      return fullName.toLowerCase().includes(searchQuery.toLowerCase());
+    });
+  };
 
-  console.log(filteredNewOrders)
+  const filteredPriorityOrders = filterOrdersByCustomerName(priorityOrders);
+  const filteredNewOrders = filterOrdersByCustomerName(newOrders);
+  const filteredCompletedOrders = filterOrdersByCustomerName(completedOrders);
 
   return (
     <div className="p-20">
@@ -72,7 +77,7 @@ export default function AllOrders() {
         <TextField
           type="text"
           variant="standard"
-          placeholder="Search A Product Name"
+          placeholder="Search By Customer Name"
           value={searchQuery}
           className="w-[400px]"
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -88,9 +93,9 @@ export default function AllOrders() {
       <div className="bg-white mt-8 p-8 rounded-lg">
         <p className="text-2xl font-bold pb-2">Priority Orders</p>
         <div className="flex rounded-lg gap-4 overflow-auto p-4">
-          {priorityOrders && priorityOrders.map((order) => (
+          {filteredPriorityOrders && filteredPriorityOrders.map((order) => (
             <div key={order._id}>
-              <OrderCard order={order} handleOrder={handleOrder} />
+              <OrderCard order={order} handleOrder={handleOrder}/>
             </div>
           ))}
         </div>
@@ -99,20 +104,20 @@ export default function AllOrders() {
       <div className="bg-white mt-8 p-8 rounded-lg">
         <p className="text-2xl font-bold pb-2">New Orders</p>
         <div className="flex rounded-lg gap-4 overflow-auto p-4">
-          {newOrders && newOrders.map((order) => (
+          {filteredNewOrders && filteredNewOrders.map((order) => (
             <div key={order._id}>
-              <OrderCard order={order} handleOrder={handleOrder} />
+              <OrderCard order={order} handleOrder={handleOrder}/>
             </div>
           ))}
         </div>
       </div>
 
       <div className="bg-white mt-8 p-8 rounded-lg">
-        <p className="text-2xl font-bold pb-2">Complete Orders</p>
+        <p className="text-2xl font-bold pb-2">Completed Orders</p>
         <div className="flex rounded-lg gap-4 overflow-auto p-4">
-          {completedOrders && completedOrders.map((order) => (
+          {filteredCompletedOrders && filteredCompletedOrders.map((order) => (
             <div key={order._id}>
-              <OrderCard order={order} handleOrder={handleOrder} />
+              <OrderCard order={order} handleOrder={handleOrder}/>
             </div>
           ))}
         </div>

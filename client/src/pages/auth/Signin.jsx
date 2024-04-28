@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import  { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 import axios from 'axios';
 import { TextField, IconButton, InputAdornment, Button } from '@mui/material';
 import {Visibility, VisibilityOff} from '@mui/icons-material';
 
-export default function Signin() {
+export default function Signin({isStaff}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState(false)
+  const [error, setError] = useState(null)
 
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
@@ -17,19 +17,21 @@ export default function Signin() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if(!password && !email) {
-      setError(true);
+      setError("All Fields are Required");
+      return
     }
 
     axios.post('http://localhost:3002/staff/login', {email, password}, { withCredentials: true })
       .then((res) => {
         if (res.status === 200) {
           navigate('/staff')
+          isStaff();
           enqueueSnackbar('Log In Successful', { variant: 'success' });
         }
       })
       .catch((err) => {
         enqueueSnackbar(err.response.data.login, { variant: 'error' });
-        console.log(err.response.data.login)
+        setError(err.response.data.login)
       })
   };
 
@@ -71,7 +73,7 @@ export default function Signin() {
             )
           }}
         />
-        {error && <p className="text-red-500">All fields are required</p>}
+        {error && <p className="text-red-500">{error}</p>}
         <Button variant="contained" type="submit">Submit</Button>
       </div>
     </form>

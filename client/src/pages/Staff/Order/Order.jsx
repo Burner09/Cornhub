@@ -54,7 +54,7 @@ export default function Order() {
             <p className="text-xl font-medium">Order <span className="text-green-500">{order?._id}</span> {order.isPriority? <span className="text-xs text-red-500">priority</span> : ""}</p>
             <div className='flex justify-end gap-8'>
               <button className='text-xl text-green-400 font-medium hover:text-dark' onClick={handleOrderComplete}><DoneAllIcon /></button>
-              <button className='text-xl text-red-400 font-medium hover:text-dark' onClick={handleSetPriority}><PriorityHighIcon /></button>
+              {!order.isComplete && <button className='text-xl text-red-400 font-medium hover:text-dark' onClick={handleSetPriority}><PriorityHighIcon /></button>}
             </div>
           </div>
           <p className="text-2xl font-medium">Customer Details</p>

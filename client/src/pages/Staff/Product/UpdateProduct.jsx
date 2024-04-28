@@ -239,7 +239,6 @@ export default function UpdateProduct() {
                   <TextField
                     label="Add Value"
                     variant="standard"
-                    value={tempValue}
                     onChange={(e) => setTempValue(e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {

@@ -41,7 +41,7 @@ export default function OrderCard({order, handleOrder}) {
         <Link to={`/staff/order/${order._id}`} className='text-xl text-blue-400 font-medium hover:text-dark'><VisibilityIcon /></Link>
         <button className='text-xl text-yellow-400 font-medium hover:text-dark' onClick={() => setShowCustomerDetails(!showCustomerDetails)}><ContactPageIcon /></button>
         <button className='text-xl text-green-400 font-medium hover:text-dark' onClick={handleOrderComplete}><DoneAllIcon /></button>
-        <button className='text-xl text-red-400 font-medium hover:text-dark' onClick={handleSetPriority}><PriorityHighIcon /></button>
+        {!order.isComplete && <button className='text-xl text-red-400 font-medium hover:text-dark' onClick={handleSetPriority}><PriorityHighIcon /></button>}
       </div>
       {showModal && (
         <OrderConfirmModal message={message} order={order} action={action} onClose={() => setShowModal(!showModal)} handleOrder={handleOrder} />

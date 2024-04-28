@@ -8,7 +8,7 @@ import StaffBanner from '../../components/Widgets/Staff/StaffBanner';
 
 
 
-export default function StaffDashboard() {
+export default function StaffDashboard({isStaff}) {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false)
   const { enqueueSnackbar } = useSnackbar();
@@ -20,6 +20,7 @@ export default function StaffDashboard() {
     setIsLoading(true)
     axios.get('http://localhost:3002/staff', { withCredentials: true })
     .then(() => {
+      isStaff(true)
       axios.get('http://localhost:3002/items/new')
       .then((res) => {
         setItems(res.data)
@@ -36,12 +37,13 @@ export default function StaffDashboard() {
     })
     .catch((err) => {
       if (err.response && err.response.status === 401) {
+        isStaff(false)
         navigate('/signin');
       }
       enqueueSnackbar('You do not have access to this page', { variant: 'error' });
       setIsLoading(false)
     });
-  }, [navigate, enqueueSnackbar])
+  }, [navigate, enqueueSnackbar, isStaff])
 
   const handleOrder = (order) => {
     if(order) {

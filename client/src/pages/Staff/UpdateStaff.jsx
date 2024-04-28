@@ -5,13 +5,18 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import axios from 'axios';
 import { useNavigate, useParams } from "react-router-dom";
+import UnlockStaffModal from "../../components/Modals/UnlockStaffModal";
+import ChangePasswordModal from "../../components/Modals/ChangePasswordModal";
 
 export default function CreateStaff() {
+  const [staff, setStaff] = useState("");
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [showUnlockModal, setShowUnlockModal] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [submitAttempted, setSubmitAttempted] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const { id } = useParams();
@@ -20,6 +25,7 @@ export default function CreateStaff() {
   useEffect(() => {
     axios.get(`http://localhost:3002/staff/${id}`)
       .then((res) => {
+        setStaff(res.data)
         setFirstname(res.data.firstname)
         setLastname(res.data.lastname)
         setEmail(res.data.email)
@@ -53,67 +59,79 @@ export default function CreateStaff() {
   };
 
   return (
-    <form className="flex justify-center content-center p-20" onSubmit={handleSubmit}>
-      <div className="flex flex-col gap-4 bg-white p-8 rounded-lg">
-        <p className="text-2xl font-medium text-center">Add New Staff</p>
-        <div className="grid grid-cols-2 gap-6">
+    <div>
+      <form className="flex justify-center content-center p-20" onSubmit={handleSubmit}>
+        <div className="flex flex-col gap-4 bg-white p-8 rounded-lg">
+          <p className="text-2xl font-medium text-center">Add New Staff</p>
+          <div className="grid grid-cols-2 gap-6">
+            <TextField
+              id="firstName"
+              label="First Name"
+              variant="standard"
+              className="mb-4"
+              value={firstname}
+              onChange={(e) => setFirstname(e.target.value)}
+              error={submitAttempted && !firstname}
+              helperText={submitAttempted && !firstname ? "First Name is required" : ""}
+            />
+            <TextField
+              id="lastName"
+              label="Last Name"
+              variant="standard"
+              className="mb-4"
+              value={lastname}
+              onChange={(e) => setLastname(e.target.value)}
+              error={submitAttempted && !lastname}
+              helperText={submitAttempted && !lastname ? "Last Name is required" : ""}
+            />
+          </div>
           <TextField
-            id="firstName"
-            label="First Name"
+            id="email"
+            label="Email"
             variant="standard"
-            className="mb-4"
-            value={firstname}
-            onChange={(e) => setFirstname(e.target.value)}
-            error={submitAttempted && !firstname}
-            helperText={submitAttempted && !firstname ? "First Name is required" : ""}
+            className="w-[400px] mb-4"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            error={submitAttempted && !email}
+            helperText={submitAttempted && !email ? "Email is required" : ""}
           />
           <TextField
-            id="lastName"
-            label="Last Name"
+            id="password"
+            label="Password"
             variant="standard"
-            className="mb-4"
-            value={lastname}
-            onChange={(e) => setLastname(e.target.value)}
-            error={submitAttempted && !lastname}
-            helperText={submitAttempted && !lastname ? "Last Name is required" : ""}
+            type={showPassword ? 'text' : 'password'}
+            className="w-[400px] mb-4"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            error={submitAttempted && !password}
+            helperText={submitAttempted && !password ? "Password is required" : ""}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton
+                    aria-label="toggle password visibility"
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                  >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              )
+            }}
           />
+          <div className="flex gap-4">
+            <p onClick={() => setShowPasswordModal(true)} className="underline cursor-pointer hover:text-tan">Change Password</p>
+            {staff.isLocked && <p onClick={() => setShowUnlockModal(true)} className="underline cursor-pointer hover:text-tan">Unlock Account</p>}
+          </div>
+          <Button variant="contained" type="submit">Update</Button>
         </div>
-        <TextField
-          id="email"
-          label="Email"
-          variant="standard"
-          className="w-[400px] mb-4"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          error={submitAttempted && !email}
-          helperText={submitAttempted && !email ? "Email is required" : ""}
-        />
-        <TextField
-          id="password"
-          label="Password"
-          variant="standard"
-          type={showPassword ? 'text' : 'password'}
-          className="w-[400px] mb-4"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          error={submitAttempted && !password}
-          helperText={submitAttempted && !password ? "Password is required" : ""}
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={handleClickShowPassword}
-                  onMouseDown={handleMouseDownPassword}
-                >
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            )
-          }}
-        />
-        <Button variant="contained" type="submit">Update</Button>
-      </div>
-    </form>
+      </form>
+      {showUnlockModal && (
+        <UnlockStaffModal staff={staff} onClose={() => setShowUnlockModal(false)} />
+      )}
+      {showPasswordModal && (
+        <ChangePasswordModal staff={staff} onClose={() => setShowPasswordModal(false)} />
+      )}
+    </div>
   );
 }

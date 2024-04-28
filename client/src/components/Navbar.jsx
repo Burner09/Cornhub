@@ -1,6 +1,6 @@
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
 
-export default function Navbar() {
+export default function Navbar({isStaff}) {
   return (
     <nav className='flex justify-between items-center px-[70px] py-3 text-light bg-dark'>
       <div>
@@ -11,7 +11,9 @@ export default function Navbar() {
         <Link to='/products' className='nav-link'>Products</Link>
         <Link to='/contact' className='nav-link'>Contact</Link>
         <Link to='/cart' className='nav-link'>Cart</Link>
+        {isStaff && <Link to='/staff' className='nav-link'>Staff Portal</Link>}
+        {isStaff && <Link to='/signout' className='nav-link'>Logout</Link>}
       </div>
     </nav>
-  )
+  );
 }
