@@ -22,7 +22,7 @@ export default function ProductsBanner({url, type}) {
   
   return (
     <div className="mt-20">
-      <p className="text-2xl font-medium capitalize">{type} on everything branded</p><br />
+      <p className="text-3xl font-medium capitalize">{type} on everything branded</p><br />
       <div className="grid grid-cols-5">
         {isLoading ? <p className="text-4xl font-medium">Loading</p> : newItems.map((item) => (
           <div key={item._id} className="col-span-1">

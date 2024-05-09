@@ -10,7 +10,7 @@ const handleErrors = (err) => {
   if (err.message === "Incorrect email" || err.message === "Incorrect password") {
     errors.login = "Incorrect email or password";
   } else if (err.message === "Account is locked") {
-    errors.login = "Account is locked. Please contact administrator.";
+    errors.login = "Account is locked";
   } else if(err.message === "Unauthorized") {
     errors.login = "Unauthorized to unlock accounts";
   } else {

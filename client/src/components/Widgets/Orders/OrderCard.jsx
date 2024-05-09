@@ -32,6 +32,7 @@ export default function OrderCard({order, handleOrder}) {
   return (
     <div className='w-96 p-4 border rounded-lg'>
       <p className="text-green-500 text-lg mb-2">{order._id} {order.isPriority? <span className='font-bold text-2xl text-red-500'>.</span>: ""}</p>
+      <p className='font-medium'>Customer: {order.userDetails.firstname} {order.userDetails.lastname}</p>
       <div className='h-28 overflow-auto'>
         {order.items.map((item) => (
           <OrderProducts key={item._id} item={item} />

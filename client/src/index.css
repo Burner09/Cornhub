@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 .nav-link {
-  @apply text-xl font-medium hover:text-tan;
+  @apply text-2xl font-medium hover:text-tan;
 }
 
 ::-webkit-scrollbar {

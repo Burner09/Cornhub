@@ -47,7 +47,7 @@ export default function UpdateProduct() {
     files.forEach(file => {
       formData.append('images', file);
     });
-
+    console.log(formData)
     axios.put(`http://localhost:3002/items/${id}`, formData, {
       withCredentials: true,
       headers: {

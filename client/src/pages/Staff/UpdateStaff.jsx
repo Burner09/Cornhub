@@ -62,7 +62,7 @@ export default function CreateStaff() {
     <div>
       <form className="flex justify-center content-center p-20" onSubmit={handleSubmit}>
         <div className="flex flex-col gap-4 bg-white p-8 rounded-lg">
-          <p className="text-2xl font-medium text-center">Add New Staff</p>
+          <p className="text-2xl font-medium text-center">Edit Staff</p>
           <div className="grid grid-cols-2 gap-6">
             <TextField
               id="firstName"

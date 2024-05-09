@@ -20,6 +20,7 @@ import UpdateStaff from './pages/Staff/UpdateStaff';
 import AllStaff from './pages/Staff/AllStaff';
 import AllOrders from './pages/Staff/Order/AllOrders';
 import NotFound from './pages/NotFound';
+import About from './pages/About';
 
 function App() {
   const [isStaff, setIsStaff] = useState(false);
@@ -54,6 +55,7 @@ function App() {
         <Route path='/cart' element={<Cart />} />
         <Route path='/product/:id' element={<Product />} />
         <Route path='/success' element={<Success />} />
+        <Route path='/about' element={<About />} />
 
         {/* Staff routes */}
         <Route path='/staff' element={<StaffDashboard isStaff={(e) => {setIsStaff(e)}} />} />

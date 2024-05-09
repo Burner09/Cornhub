@@ -33,7 +33,8 @@ export default function Products() {
       <div className=" flex justify-center my-12">
         <TextField
           type="text"
-          variant="standard"
+          variant="outlined"
+          size="small"
           placeholder="Search A Product Name"
           value={searchQuery}
           className="w-[400px]"

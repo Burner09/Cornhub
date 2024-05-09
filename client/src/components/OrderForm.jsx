@@ -14,6 +14,7 @@ export default function OrderForm({ product }) {
   const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
   const [files, setFiles] = useState([]);
+  const [qtyError, setQtyError] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState(() => {
     const initialSelectedOptions = {};
     if (product && product.specificDetails) {
@@ -25,6 +26,10 @@ export default function OrderForm({ product }) {
   });
 
   const handleAddToCart = () => {
+    if(!selectedOptions.selectedDetails.qty) {
+      setQtyError(true)
+      return
+    }
     const formData = new FormData();
     formData.append('productID', product._id);
     formData.append('price', product.price);
@@ -101,13 +106,17 @@ export default function OrderForm({ product }) {
         </FormControl>
       ))}
 
-      <FormControl key="qty" className="col-span-2" size="small">
+      <FormControl key="qty" className="col-span-2">
         <TextField 
+          error={qtyError}
           label="Qty"
           type="number" 
           variant="standard"
+          size="small"
           value={selectedOptions.selectedDetails.qty || ''}
-          onChange={(e) => handleSelectedChange('qty', e.target.value)}/>
+          onChange={(e) => handleSelectedChange('qty', e.target.value)}
+          helperText={qtyError? "Qty required" : ""}
+        />
       </FormControl>
       
       <div {...getRootProps({ className: 'col-span-2 p-5 border border-dashed border-dark rounded-lg flex justify-center items-center' })}>
@@ -130,7 +139,7 @@ export default function OrderForm({ product }) {
           </li>
         ))}
       </ul>
-      <button onClick={handleAddToCart} className="col-span-2 bg-tan rounded-md py-4 text-xl font-bold hover:bg-orange-500">
+      <button onClick={handleAddToCart} className="col-span-2 bg-tan rounded-md py-3 text-xl font-bold hover:bg-orange-500">
         Add To Cart
       </button>
     </div>

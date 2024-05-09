@@ -136,17 +136,25 @@ export const updateItems = async (req, res) => {
   let folder;
   try {
     const { id } = req.params;
-    const { name, description, price, sizes } = req.body;
-    let updatedItem = { name, description, price, sizes };
+    const { name, description, price, specificDetails } = req.body;
+    const updatedItem = { name, description, price, specificDetails: JSON.parse(specificDetails) };
 
     if (req.files && req.files.length > 0) {
       folder = await createFolder(name);
-      const newImagePaths = await Promise.all(req.files.map(async (file, index) => await compressImages(folder, file, index, name)));
+      const newImagePaths = await Promise.all(
+        req.files.map(async (file, index) =>
+          await compressImages(folder, file, index, name)
+        )
+      );
 
       let existingProduct = await Item.findById(id);
 
       if (existingProduct.imagePaths && existingProduct.imagePaths.length > 0) {
-        await Promise.all(existingProduct.imagePaths.map(async (imagePath) => await deleteFile(folder.folderPath, imagePath)));
+        await Promise.all(
+          existingProduct.imagePaths.map(async (imagePath) =>
+            await deleteFile(folder.folderPath, imagePath)
+          )
+        );
       }
 
       updatedItem.imagePaths = newImagePaths;
@@ -158,10 +166,11 @@ export const updateItems = async (req, res) => {
     if (req.files && folder) {
       await deleteFolder(folder.folderPath);
     }
-    console.log(err);
+    console.error(err);
     res.status(500).json(err.message);
   }
-}
+};
+
 
 export const deleteItem = async (req, res) => {
   try {

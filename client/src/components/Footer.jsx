@@ -29,8 +29,8 @@ export default function Footer() {
         <div className="flex flex-col justify-center gap-2 py-10">
           <Link to='/contact' className='text-xl font-medium hover:text-tan'>Contact</Link>
           <Link to='/products' className='text-xl font-medium hover:text-tan'>Products</Link>
-          <Link to='/' className='text-xl font-medium hover:text-tan'>About US</Link>
-          <Link to='/staff' className='text-xl font-medium hover:text-tan'>Staff Portal</Link>
+          <Link to='/about' className='text-xl font-medium hover:text-tan'>About US</Link>
+          <Link to='/signin' className='text-xl font-medium hover:text-tan'>Staff Portal</Link>
         </div>
       </div>
     </div>

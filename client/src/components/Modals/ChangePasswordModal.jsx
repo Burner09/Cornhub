@@ -137,11 +137,8 @@ export default function ChangePasswordModal({ staff, onClose}) {
             }}
           />
           <ul className="text-sm text-gray-500">
-            <li>Password must contain 1 uppercase letter</li>
-            <li>Password must contain 1 lowercase letter</li>
-            <li>Password must contain 1 number</li>
-            <li>Password must contain 1 special character</li>
-            <li>Password must be 6 characters long</li>
+            <li>Password must contain 1 uppercase and lowercase letter,<br /> 1 number, 1 special character </li>
+            <li>Password must be at least 6 characters long</li>
           </ul>
           {error && <p className="text-red-500">{error}</p>}
           <Button variant="contained" type="submit">Change Password</Button>

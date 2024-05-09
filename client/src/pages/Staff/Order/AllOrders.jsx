@@ -73,10 +73,12 @@ export default function AllOrders() {
 
   return (
     <div className="p-20">
+      <p className="text-4xl font-medium">All Orders</p>
       <div className=" flex justify-center my-12">
         <TextField
           type="text"
-          variant="standard"
+          variant="outlined"
+          size="small"
           placeholder="Search By Customer Name"
           value={searchQuery}
           className="w-[400px]"

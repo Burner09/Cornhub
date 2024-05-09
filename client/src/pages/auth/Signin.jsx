@@ -42,7 +42,7 @@ export default function Signin({isStaff}) {
   return (
     <form className="flex justify-center content-center p-20" onSubmit={handleSubmit}>
       <div className="flex flex-col gap-4 bg-white p-8 rounded-lg">
-        <p className="text-2xl font-medium text-center">Staff Sign In</p>
+        <p className="text-3xl font-bold text-center">Staff Sign In</p>
         <TextField
           id="email"
           label="Email"
@@ -74,7 +74,7 @@ export default function Signin({isStaff}) {
           }}
         />
         {error && <p className="text-red-500">{error}</p>}
-        <Button variant="contained" type="submit">Submit</Button>
+        <Button variant="contained" type="submit">Sign in</Button>
       </div>
     </form>
   );
