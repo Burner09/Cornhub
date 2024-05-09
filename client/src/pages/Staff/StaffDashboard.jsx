@@ -24,15 +24,15 @@ export default function StaffDashboard({isStaff}) {
       axios.get('http://localhost:3002/items/new')
       .then((res) => {
         setItems(res.data)
-      })
+      }).catch(err=>err.data)
       axios.get('http://localhost:3002/order/staffdashboardorders', { withCredentials: true })
       .then((res) => {
         setOrders(res.data)
-      })
+      }).catch(err=>err.data)
       axios.get('http://localhost:3002/staff/allstaff')
       .then((res) => {
         setStaff(res.data)
-      })
+      }).catch(err=>err.data)
       setIsLoading(false)
     })
     .catch((err) => {
@@ -57,7 +57,7 @@ export default function StaffDashboard({isStaff}) {
   return (
     <div className="p-20">
       <p className="text-4xl font-bold">Staff Dashboard</p>
-      {!isLoading && items.length > 0 && 
+      {!isLoading && 
         <div>
           <StaffOrderBanner orders={orders} handleOrder={handleOrder} />
           <StaffProductBanner items={items} />
